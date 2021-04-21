@@ -1,5 +1,5 @@
 {
-  "name": "fuzzy-bookmarks",
+	"name": "fuzzy-bookmarks",
 	"displayName": "fuzzy-bookmarks",
 	"description": "fuzzy bookmarks",
 	"version": "0.0.1",
@@ -10,14 +10,15 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:fuzzy-bookmarks.helloWorld"
+		"*"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "fuzzy-bookmarks.helloWorld",
-				"title": "Hello World"
+				"category": "FzB",
+				"command": "fuzzy-bookmarks.searchBookmarks",
+				"title": "Search Bookmarks"
 			}
 		]
 	},
