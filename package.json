@@ -17,8 +17,20 @@
 		"commands": [
 			{
 				"category": "FzB",
-				"command": "fuzzy-bookmarks.searchBookmarks",
-				"title": "Search Bookmarks"
+				"title": "Search Bookmarks",
+				"command": "fzb.searchBookmarks"
+			}
+		],
+		"configuration": [
+			{
+				"title": "FuzzyBookmarks",
+				"properties": {
+					"fzb.globalBookmarkPath": {
+						"type": "string",
+						"default": null,
+						"description": ""
+					}
+				}
 			}
 		]
 	},
