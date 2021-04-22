@@ -3,6 +3,7 @@
 	"displayName": "fuzzy-bookmarks",
 	"description": "fuzzy bookmarks",
 	"version": "0.0.1",
+	"license": "MIT",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -25,10 +26,15 @@
 			{
 				"title": "FuzzyBookmarks",
 				"properties": {
-					"fzb.defaultBookmarkPath": {
+					"fzb.defaultBookmarkDir": {
 						"type": "string",
 						"default": null,
-						"description": ""
+						"description": "Set up a directory to save the bookmark."
+					},
+					"fzb.defaultBookmarkFileName": {
+						"type": "string",
+						"default": "bookmark.json",
+						"description": "Set a file name to save the bookmark."
 					}
 				}
 			}

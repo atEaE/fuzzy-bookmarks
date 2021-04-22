@@ -1,4 +1,16 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
+import { InValidReason, ValidateObject } from './utils/validate';
+
+/**
+ * Fuzzy Bookmark configuration.
+ */
+export interface FzbConfig extends ValidateObject {
+    defaultDir(): string | undefined
+    defaultFileName(): string | undefined
+    defaultBookmarkFullPath(): string | undefined
+    validate(): [boolean, InValidReason]
+}
 
 /**
  * Contributes commands.
@@ -12,23 +24,72 @@ export namespace ContributesCommands {
  */
 export namespace ContributesConfig {
     const CONFIG_CATEGORY = "fzb";
-    const DEFAULT_PATH = "defaultBookmarkPath";
+    const DEFAULT_DIR = "defaultBookmarkDir";
+    const DEFAULT_FILENAME = "defaultBookmarkFileName";
 
+    /**
+     * Key names for settings that can be configured in Fuzzy Bookmarks
+     */
     export const CONFIG_KEY = {
-        DEFAULT_PATH: CONFIG_CATEGORY + "." + DEFAULT_PATH
+        defaultDir: CONFIG_CATEGORY + "." + DEFAULT_DIR,
+        defaultFileName: CONFIG_CATEGORY + "." + DEFAULT_FILENAME
     };
 
+    /**
+     * Fuzzy Bookmark configuration class.
+     */
     class FzbConfig {
         config: vscode.WorkspaceConfiguration;
         constructor(config: vscode.WorkspaceConfiguration) {
             this.config = config;
         }
 
-        public globalPath(): string | undefined {
-            return this.config.get(DEFAULT_PATH);
+        /**
+         * Returns the default directory path to save the bookmark.
+         * @returns defaultBookmarkDir
+         */
+        public defaultDir(): string | undefined {
+            return this.config.get(DEFAULT_DIR);
+        }
+
+        /**
+         * Returns the default file name where the bookmarks are saved.
+         * @returns defaultFileName
+         */
+        public defaultFileName(): string | undefined {
+            return this.config.get(DEFAULT_FILENAME);
+        }
+
+        /**
+         * Returns the full path of the Bookmark file.
+         * @returns bookmarkFullPath
+         */
+        public defaultBookmarkFullPath(): string | undefined {
+            var dir = this.defaultDir();
+            var file = this.defaultFileName();
+            if (dir && file) {
+                return path.join(dir, file);
+            }
+            return undefined;
+        }
+
+        /**
+         * Evaluate the validity of Fuzzy Bookmark setting information.
+         */
+        public validate(): [boolean, InValidReason] {
+            // check default dir
+            if (!this.defaultDir()) {
+                return [false, { error: `No value is set for ${CONFIG_KEY.defaultDir}` }];
+            }
+
+            return [true, { error: "" }];
         }
     }
 
+    /**
+     * Get the configuration for Fuzzy Bookmarks.
+     * @returns FzbConfig
+     */
     export function getFzBConfig(): FzbConfig {
         return new FzbConfig(vscode.workspace.getConfiguration(CONFIG_CATEGORY));
     };

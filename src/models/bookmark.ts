@@ -2,7 +2,7 @@
 /**
  * BookmarkType is used to indicate the type of bookmark.
  */
-type BookmarkType = "file" | "url"
+type BookmarkType = "file" | "url" | "folder";
 
 /**
  * BookmarksInfo is the metadata used for storage.
@@ -57,14 +57,14 @@ export interface BookmarkLabel {
 /**
  * Create the items needed to display the Pick.
  * @param bookmark bookmark
- * @returns pickitem
+ * @return bookmarklabel
  */
-export function createPickItem(bookmark: Bookmark): BookmarkLabel {
+export function createBookmarkLabel(bookmark: Bookmark): BookmarkLabel {
     return {
         label: getLabel(bookmark.type),
         type: bookmark.type,
         description: bookmark.detail,
-    }
+    };
 }
 
 /**
@@ -74,10 +74,12 @@ export function createPickItem(bookmark: Bookmark): BookmarkLabel {
 function getLabel(type: BookmarkType): string {
     switch (type) {
         case 'file':
-            return "$(file)"
+            return "$(file)";
         case 'url':
-            return "$(globe)"
+            return "$(globe)";
+        case 'folder':
+            return "$(folder)";
         default:
-            return "$(warning)"
+            return "$(warning)";
     }
 }
