@@ -11,25 +11,25 @@ export namespace ContributesCommands {
  * Contributes configuration.
  */
 export namespace ContributesConfig {
-    const CONFIG_CATEGORY = "fzb"
-    const GLOBAL_PATH = "globalBookmarkPath"
+    const CONFIG_CATEGORY = "fzb";
+    const DEFAULT_PATH = "defaultBookmarkPath";
 
     export const CONFIG_KEY = {
-        GLOBAL_PATH: CONFIG_CATEGORY + "." + GLOBAL_PATH
-    }
+        DEFAULT_PATH: CONFIG_CATEGORY + "." + DEFAULT_PATH
+    };
 
     class FzbConfig {
-        config: vscode.WorkspaceConfiguration
+        config: vscode.WorkspaceConfiguration;
         constructor(config: vscode.WorkspaceConfiguration) {
-            this.config = config
+            this.config = config;
         }
 
         public globalPath(): string | undefined {
-            return this.config.get(GLOBAL_PATH)
+            return this.config.get(DEFAULT_PATH);
         }
     }
 
     export function getFzBConfig(): FzbConfig {
-        return new FzbConfig(vscode.workspace.getConfiguration(CONFIG_CATEGORY))
+        return new FzbConfig(vscode.workspace.getConfiguration(CONFIG_CATEGORY));
     };
 }
