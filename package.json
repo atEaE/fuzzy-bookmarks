@@ -35,6 +35,15 @@
 						"type": "string",
 						"default": "bookmarks.json",
 						"description": "Set a file name to save the bookmark."
+					},
+					"fzb.directoryOpenType": {
+						"type": "string",
+						"enum": [
+							"terminal",
+							"explorer"
+						],
+						"default": "terminal",
+						"description": "Set the Open method when Bookmark is selected as the directory type."
 					}
 				}
 			}

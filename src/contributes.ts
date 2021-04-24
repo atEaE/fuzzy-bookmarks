@@ -9,6 +9,7 @@ export interface FzbConfig extends ValidateObject {
     defaultDir(): string | undefined
     defaultFileName(): string | undefined
     defaultBookmarkFullPath(): string | undefined
+    directoryOpenType(): DirectoryOpenType | undefined
     validate(): [boolean, InValidReason]
 }
 
@@ -20,19 +21,26 @@ export namespace ContributesCommands {
 }
 
 /**
+ * Directory open type.
+ */
+type DirectoryOpenType = "terminal" | "explorer";
+
+/**
  * Contributes configuration.
  */
 export namespace ContributesConfig {
     const CONFIG_CATEGORY = "fzb";
     const DEFAULT_DIR = "defaultBookmarkDir";
     const DEFAULT_FILENAME = "defaultBookmarkFileName";
+    const DIRECTORY_OPEN_TYPE = "directoryOpenType";
 
     /**
      * Key names for settings that can be configured in Fuzzy Bookmarks
      */
     export const CONFIG_KEY = {
         defaultDir: CONFIG_CATEGORY + "." + DEFAULT_DIR,
-        defaultFileName: CONFIG_CATEGORY + "." + DEFAULT_FILENAME
+        defaultFileName: CONFIG_CATEGORY + "." + DEFAULT_FILENAME,
+        directoryOpenType: CONFIG_CATEGORY + "." + DIRECTORY_OPEN_TYPE,
     };
 
     /**
@@ -58,6 +66,14 @@ export namespace ContributesConfig {
          */
         public defaultFileName(): string | undefined {
             return this.config.get(DEFAULT_FILENAME);
+        }
+
+        /**
+         * Returns the Open method of the directory.
+         * @returns open type.
+         */
+        public directoryOpenType(): DirectoryOpenType | undefined {
+            return this.config.get(DIRECTORY_OPEN_TYPE);
         }
 
         /**

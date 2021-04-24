@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import * as workbench from 'vscode';
-import * as webview from 'open';
+import * as open from 'open';
 import * as fs from 'fs';
 import * as fileutils from '../utils/file';
 import { FzbConfig } from '../contributes';
@@ -35,21 +34,25 @@ export function showExecute(config: FzbConfig): void {
         switch (item.type) {
             case "file":
                 showFile(item.description);
+                break;
             case "folder":
                 showFolder(item.description);
+                break;
             case "url":
                 showUrl(item.description);
+                break;
             default:
-                return;
+                break;;
         }
     });
 }
 
 /**
  * Refer to the files registered in Bookmark.
+ * @param config Fuzzy Bookmark configuration.
  * @param description bookmark description.
  */
-function showFile(description: string | undefined) {
+function showFile(config: FzbConfig, description: string | undefined) {
     if (description) {
         vscode.window.showTextDocument(vscode.Uri.file(description), {
             preview: false,
@@ -59,21 +62,33 @@ function showFile(description: string | undefined) {
 
 /**
  * Refer to the folder registered in Bookmark.
+ * @param config Fuzzy Bookmark configuration.
  * @param description bookmark description.
  */
-function showFolder(description: string | undefined) {
+function showFolder(config: FzbConfig, description: string | undefined) {
     if (description) {
-        vscode.commands.executeCommand("revealFileInOS", description);
+        switch (config.directoryOpenType()) {
+            case "terminal":
+                vscode.commands.executeCommand("openInTerminal", vscode.Uri.file(description));
+                break;
+            case "explorer":
+                open(description);
+                break;
+            default:
+                break;
+        }
+
     }
 }
 
 /**
  * Refer to the URL registered in Bookmark.
+ * @param config Fuzzy Bookmark configuration.
  * @param description bookmark description.
  */
-function showUrl(description: string | undefined) {
+function showUrl(config: FzbConfig, description: string | undefined) {
     if (description) {
-        webview(description);
+        open(description);
     }
 }
 
