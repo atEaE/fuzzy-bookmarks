@@ -28,12 +28,12 @@
 				"properties": {
 					"fzb.defaultBookmarkDir": {
 						"type": "string",
-						"default": null,
+						"default": "~/.vscode/fzb",
 						"description": "Set up a directory to save the bookmark."
 					},
 					"fzb.defaultBookmarkFileName": {
 						"type": "string",
-						"default": "bookmark.json",
+						"default": "bookmarks.json",
 						"description": "Set a file name to save the bookmark."
 					}
 				}

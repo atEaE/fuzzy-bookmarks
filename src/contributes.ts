@@ -79,7 +79,12 @@ export namespace ContributesConfig {
         public validate(): [boolean, InValidReason] {
             // check default dir
             if (!this.defaultDir()) {
-                return [false, { error: `No value is set for ${CONFIG_KEY.defaultDir}` }];
+                return [false, { error: `Set the directory path where Bookmarks will be stored to "${CONFIG_KEY.defaultDir}" .` }];
+            }
+
+
+            if (!this.defaultFileName()) {
+                return [false, { error: `Set the file name for saving bookmarks to "${CONFIG_KEY.defaultFileName}" .` }];
             }
 
             return [true, { error: "" }];
