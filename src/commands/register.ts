@@ -20,12 +20,12 @@ export function registerExecute(config: FzbConfig): void {
         if (fs.existsSync(fileutils.resolveHome(config.defaultBookmarkFullPath()))) {
             var stats: fs.Stats = fs.statSync(fileutils.resolveHome(config.defaultBookmarkFullPath()));
             if (stats.isDirectory()) {
-                vscode.window.showWarningMessage(`${config.defaultBookmarkFullPath()} is a directory. Please specify a file.`)
-                return
+                vscode.window.showWarningMessage(`${config.defaultBookmarkFullPath()} is a directory. Please specify a file.`);
+                return;
             }
         }
 
-        var bookmarks: BookmarksInfo = { version: FORMAT_VERSION, bookmarks: [] }
+        var bookmarks: BookmarksInfo = { version: FORMAT_VERSION, bookmarks: [] };
 
     } catch (e) {
         vscode.window.showErrorMessage(e);

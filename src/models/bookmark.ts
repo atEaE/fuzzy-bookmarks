@@ -7,7 +7,7 @@ type BookmarkType = "file" | "url" | "folder";
 /**
  * Format version.
  */
-export const FORMAT_VERSION = "1.0.0"
+export const FORMAT_VERSION = "1.0.0";
 
 /**
  * BookmarksInfo is the metadata used for storage.
