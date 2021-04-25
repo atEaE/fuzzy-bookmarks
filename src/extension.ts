@@ -15,8 +15,10 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	// register commands
-	let disposable = vscode.commands.registerCommand(ContributesCommands.SHOW_BOOKMARKS, () => { registerWrapper(config, commands.showExecute); });
-	context.subscriptions.push(disposable);
+	let showDisposable = vscode.commands.registerCommand(ContributesCommands.SHOW_BOOKMARKS, () => { registerWrapper(config, commands.showExecute); });
+	let registerDisposable = vscode.commands.registerCommand(ContributesCommands.REGISTER_BOOKMARKS, () => { registerWrapper(config, commands.registerExecute); });
+	context.subscriptions.push(showDisposable);
+	context.subscriptions.push(registerDisposable);
 }
 
 /**

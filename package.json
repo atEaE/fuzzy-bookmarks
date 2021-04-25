@@ -20,6 +20,11 @@
 				"category": "FzB",
 				"title": "Show Bookmarks",
 				"command": "fzb.showBookmarks"
+			},
+			{
+				"category": "FzB",
+				"title": "Register Bookmarks",
+				"command": "fzb.registerBookmarks"
 			}
 		],
 		"configuration": [

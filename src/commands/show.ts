@@ -6,7 +6,7 @@ import { FzbConfig } from '../contributes';
 import { BookmarksInfo, BookmarkLabel, createBookmarkLabel } from '../models/bookmark';
 
 /**
- * 
+ * Execute the process of show command.
  * @param config Fuzzy Bookmark configuration.
  * @returns void
  */
