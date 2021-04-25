@@ -5,12 +5,12 @@ import { InValidReason, ValidateObject } from './utils/validate';
 /**
  * Fuzzy Bookmark configuration.
  */
-export interface FzbConfig extends ValidateObject {
+export interface FzbConfig extends ValidateObject<ErrorReasonCode> {
     defaultDir(): string | undefined
     defaultFileName(): string | undefined
     defaultBookmarkFullPath(): string | undefined
     directoryOpenType(): DirectoryOpenType | undefined
-    validate(): [boolean, InValidReason]
+    validate(): [boolean, InValidReason<ErrorReasonCode>]
 }
 
 /**
@@ -19,12 +19,18 @@ export interface FzbConfig extends ValidateObject {
 export namespace ContributesCommands {
     export const SHOW_BOOKMARKS = "fzb.showBookmarks";
     export const REGISTER_BOOKMARKS = "fzb.registerBookmarks";
+    export const SETUP_BOOKMARKS = "fzb.setupBookmarks";
 }
 
 /**
  * Directory open type.
  */
 type DirectoryOpenType = "terminal" | "explorer";
+
+/**
+ * Error reason code.
+ */
+export type ErrorReasonCode = "---" | "101" | "201";
 
 /**
  * Contributes configuration.
@@ -93,18 +99,15 @@ export namespace ContributesConfig {
         /**
          * Evaluate the validity of Fuzzy Bookmark setting information.
          */
-        public validate(): [boolean, InValidReason] {
-            // check default dir
+        public validate(): [boolean, InValidReason<ErrorReasonCode>] {
+            // Checking the setting values
             if (!this.defaultDir()) {
-                return [false, { error: `Set the directory path where Bookmarks will be stored to "${CONFIG_KEY.defaultDir}" .` }];
+                return [false, { code: "101", error: `Set the directory path where Bookmarks will be stored to "${CONFIG_KEY.defaultDir}" .` }];
             }
-
-
             if (!this.defaultFileName()) {
-                return [false, { error: `Set the file name for saving bookmarks to "${CONFIG_KEY.defaultFileName}" .` }];
+                return [false, { code: "201", error: `Set the file name for saving bookmarks to "${CONFIG_KEY.defaultFileName}" .` }];
             }
-
-            return [true, { error: "" }];
+            return [true, { code: "---", error: "" }];
         }
     }
 

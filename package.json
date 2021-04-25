@@ -25,6 +25,11 @@
 				"category": "FzB",
 				"title": "Register Bookmarks",
 				"command": "fzb.registerBookmarks"
+			},
+			{
+				"category": "FzB",
+				"title": "Setup Fuzzy Bookmarks",
+				"command": "fzb.setupBookmarks"
 			}
 		],
 		"configuration": [
@@ -34,7 +39,7 @@
 					"fzb.defaultBookmarkDir": {
 						"type": "string",
 						"default": "~/.vscode/fzb",
-						"description": "Set up a directory to save the bookmark."
+						"description": "Set a directory to save the bookmark."
 					},
 					"fzb.defaultBookmarkFileName": {
 						"type": "string",
