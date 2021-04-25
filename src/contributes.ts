@@ -17,7 +17,7 @@ export interface FzbConfig extends ValidateObject {
  * Contributes commands.
  */
 export namespace ContributesCommands {
-    export const SEARCH_BOOKMARKS = "fzb.searchBookmarks";
+    export const SHOW_BOOKMARKS = "fzb.showBookmarks";
 }
 
 /**

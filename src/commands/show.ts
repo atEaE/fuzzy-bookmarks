@@ -33,13 +33,13 @@ export function showExecute(config: FzbConfig): void {
 
         switch (item.type) {
             case "file":
-                showFile(item.description);
+                showFile(config, item.description);
                 break;
             case "folder":
-                showFolder(item.description);
+                showFolder(config, item.description);
                 break;
             case "url":
-                showUrl(item.description);
+                showUrl(config, item.description);
                 break;
             default:
                 break;;
@@ -77,7 +77,6 @@ function showFolder(config: FzbConfig, description: string | undefined) {
             default:
                 break;
         }
-
     }
 }
 

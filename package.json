@@ -18,8 +18,8 @@
 		"commands": [
 			{
 				"category": "FzB",
-				"title": "Search Bookmarks",
-				"command": "fzb.searchBookmarks"
+				"title": "Show Bookmarks",
+				"command": "fzb.showBookmarks"
 			}
 		],
 		"configuration": [

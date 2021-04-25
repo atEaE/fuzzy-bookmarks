@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	// register commands
-	let disposable = vscode.commands.registerCommand(ContributesCommands.SEARCH_BOOKMARKS, () => { registerWrapper(config, commands.showExecute); });
+	let disposable = vscode.commands.registerCommand(ContributesCommands.SHOW_BOOKMARKS, () => { registerWrapper(config, commands.showExecute); });
 	context.subscriptions.push(disposable);
 }
 
