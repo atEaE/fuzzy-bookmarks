@@ -1,16 +1,18 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
+import * as fileutils from './utils/file';
 import { InValidReason, ValidateObject } from './utils/validate';
 
 /**
  * Fuzzy Bookmark configuration.
  */
-export interface FzbConfig extends ValidateObject<ErrorReasonCode> {
+export interface FzbConfig extends ValidateObject {
     defaultDir(): string | undefined
     defaultFileName(): string | undefined
     defaultBookmarkFullPath(): string | undefined
     directoryOpenType(): DirectoryOpenType | undefined
-    validate(): [boolean, InValidReason<ErrorReasonCode>]
+    validate(): [boolean, InValidReason]
 }
 
 /**
@@ -26,11 +28,6 @@ export namespace ContributesCommands {
  * Directory open type.
  */
 type DirectoryOpenType = "terminal" | "explorer";
-
-/**
- * Error reason code.
- */
-export type ErrorReasonCode = "---" | "101" | "201" | "202";
 
 /**
  * Contributes configuration.
@@ -99,17 +96,22 @@ export namespace ContributesConfig {
         /**
          * Evaluate the validity of Fuzzy Bookmark setting information.
          */
-        public validate(): [boolean, InValidReason<ErrorReasonCode>] {
+        public validate(): [boolean, InValidReason] {
             // Checking the setting values
             if (!this.defaultDir() || !this.defaultDir()?.trim()) {
-                return [false, { code: "201", error: `Set the directory path where Bookmarks will be stored to "${CONFIG_KEY.defaultDir}" .` }];
+                return [false, { error: `Set the directory path where Bookmarks will be stored to "${CONFIG_KEY.defaultDir}" .` }];
             }
             if (!this.defaultFileName() || !this.defaultFileName()?.trim()) {
-                return [false, { code: "202", error: `Set the file name for saving bookmarks to "${CONFIG_KEY.defaultFileName}" .` }];
+                return [false, { error: `Set the file name for saving bookmarks to "${CONFIG_KEY.defaultFileName}" .` }];
             }
 
-            // 
-            return [true, { code: "---", error: "" }];
+            if (!fs.existsSync(fileutils.resolveHome(this.defaultDir()))) {
+                return [false, { error: `The configured folder(${this.defaultDir()}) does not exist. Execute "FzB: Setup Fuzzy Bookmarks" or create a folder.` }];
+            }
+            if (!fs.existsSync(fileutils.resolveHome(this.defaultBookmarkFullPath()))) {
+                return [false, { error: `The configured file(${this.defaultBookmarkFullPath()}) does not exist. Execute "FzB: Setup Fuzzy Bookmarks".` }];
+            }
+            return [true, { error: "" }];
         }
     }
 

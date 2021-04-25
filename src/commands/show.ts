@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as open from 'open';
-import * as fs from 'fs';
+import * as jsonutils from '../utils/json';
 import * as fileutils from '../utils/file';
 import { FzbConfig } from '../contributes';
 import { BookmarksInfo, BookmarkLabel, createBookmarkLabel } from '../models/bookmark';
@@ -17,10 +17,20 @@ export function showExecute(config: FzbConfig): void {
         return;
     }
 
-    var bookmarkPath = fileutils.resolveHome(config.defaultBookmarkFullPath());
-    var buff = fs.readFileSync(bookmarkPath, "utf-8");
-    var bookmarks = JSON.parse(buff) as BookmarksInfo;
+    var blob = fileutils.safeReadFileSync(fileutils.resolveHome(config.defaultBookmarkFullPath()), "utf-8");
+    if (!blob) {
+        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". Please check the existence of the file.`);
+        return;
+    }
+    var bookmarks = jsonutils.safeParse<BookmarksInfo>(blob);
+    if (!bookmarks) {
+        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". The format is different from what is expected.`);
+        return;
+    }
     var items = bookmarks.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
+    if (items.length === 0) {
+        items.push({ type: "nil", label: "$(issues)", description: "Does not exist bookmarks." })
+    }
 
     vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {
         if (!item) { return; }
@@ -34,6 +44,8 @@ export function showExecute(config: FzbConfig): void {
                 break;
             case "url":
                 showUrl(config, item.description);
+                break;
+            case "nil":
                 break;
             default:
                 break;;

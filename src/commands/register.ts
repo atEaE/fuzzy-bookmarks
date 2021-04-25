@@ -16,6 +16,8 @@ export function registerExecute(config: FzbConfig): void {
         return;
     }
 
+
+
     if (fs.existsSync(fileutils.resolveHome(config.defaultBookmarkFullPath()))) {
         var stats: fs.Stats = fs.statSync(fileutils.resolveHome(config.defaultBookmarkFullPath()));
         if (stats.isDirectory()) {
