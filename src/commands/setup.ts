@@ -14,6 +14,7 @@ export function setupExecute(config: FzbConfig): void {
         .then(input => {
             if (input === "y" || input === "yes") {
                 try {
+                    // check folder.
                     if (fs.existsSync(fileutils.resolveHome(config.defaultDir()))) {
                         vscode.window.showInformationMessage("OK! Confirmed the existence of the destination folder.");
                     } else {
@@ -21,6 +22,7 @@ export function setupExecute(config: FzbConfig): void {
                         vscode.window.showInformationMessage(`OK! Create a new destination folder(${config.defaultDir()}).`);
                     }
 
+                    // check file.
                     if (fs.existsSync(fileutils.resolveHome(config.defaultBookmarkFullPath()))) {
                         vscode.window.showInformationMessage("OK! Confirmed the existence of the destination file.");
                     } else {

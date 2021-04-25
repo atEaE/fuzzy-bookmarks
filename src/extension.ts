@@ -32,7 +32,7 @@ function registerWrapper(config: FzbConfig, delegate: (config: FzbConfig) => voi
 	try {
 		delegate(config);
 	} catch (e) {
-		vscode.window.showErrorMessage(e);
+		vscode.window.showErrorMessage(e.message);
 	}
 }
 

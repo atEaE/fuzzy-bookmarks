@@ -11,22 +11,16 @@ import { BookmarksInfo, BookmarkLabel, createBookmarkLabel } from '../models/boo
  * @returns void
  */
 export function showExecute(config: FzbConfig): void {
-    var items: BookmarkLabel[] = [];
-    try {
-        var [ok, reason] = config.validate();
-        if (!ok) {
-            vscode.window.showWarningMessage(reason.error);
-            return;
-        }
-
-        var bookmarkPath = fileutils.resolveHome(config.defaultBookmarkFullPath());
-        var buff = fs.readFileSync(bookmarkPath, "utf-8");
-        var bookmarks = JSON.parse(buff) as BookmarksInfo;
-        items = bookmarks.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
-    } catch (e) {
-        vscode.window.showErrorMessage(e);
+    var [ok, reason] = config.validate();
+    if (!ok) {
+        vscode.window.showWarningMessage(reason.error);
         return;
     }
+
+    var bookmarkPath = fileutils.resolveHome(config.defaultBookmarkFullPath());
+    var buff = fs.readFileSync(bookmarkPath, "utf-8");
+    var bookmarks = JSON.parse(buff) as BookmarksInfo;
+    var items = bookmarks.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
 
     vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {
         if (!item) { return; }

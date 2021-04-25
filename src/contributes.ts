@@ -30,7 +30,7 @@ type DirectoryOpenType = "terminal" | "explorer";
 /**
  * Error reason code.
  */
-export type ErrorReasonCode = "---" | "101" | "201";
+export type ErrorReasonCode = "---" | "101" | "201" | "202";
 
 /**
  * Contributes configuration.
@@ -101,12 +101,14 @@ export namespace ContributesConfig {
          */
         public validate(): [boolean, InValidReason<ErrorReasonCode>] {
             // Checking the setting values
-            if (!this.defaultDir()) {
-                return [false, { code: "101", error: `Set the directory path where Bookmarks will be stored to "${CONFIG_KEY.defaultDir}" .` }];
+            if (!this.defaultDir() || !this.defaultDir()?.trim()) {
+                return [false, { code: "201", error: `Set the directory path where Bookmarks will be stored to "${CONFIG_KEY.defaultDir}" .` }];
             }
-            if (!this.defaultFileName()) {
-                return [false, { code: "201", error: `Set the file name for saving bookmarks to "${CONFIG_KEY.defaultFileName}" .` }];
+            if (!this.defaultFileName() || !this.defaultFileName()?.trim()) {
+                return [false, { code: "202", error: `Set the file name for saving bookmarks to "${CONFIG_KEY.defaultFileName}" .` }];
             }
+
+            // 
             return [true, { code: "---", error: "" }];
         }
     }
