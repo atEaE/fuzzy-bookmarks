@@ -29,7 +29,7 @@ export function showExecute(config: FzbConfig): void {
     }
     var items = bookmarks.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
     if (items.length === 0) {
-        items.push({ type: "nil", label: "$(issues)", description: "Does not exist bookmarks." })
+        items.push({ type: "nil", label: "$(issues)", description: "Does not exist bookmarks." });
     }
 
     vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {

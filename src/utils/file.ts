@@ -29,8 +29,8 @@ export function resolveHome(filepath: string | undefined | null): string {
  */
 export function safeReadFileSync(path: number | fs.PathLike, options: { encoding: string; flag?: string; } | string): string | undefined {
     try {
-        return fs.readFileSync(path, options)
+        return fs.readFileSync(path, options);
     } catch {
-        return undefined
+        return undefined;
     }
 }
