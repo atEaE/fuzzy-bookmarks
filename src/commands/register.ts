@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as jsonutils from '../utils/json';
 import * as fileutils from '../utils/file';
 import { FzbConfig } from '../contributes';
-import { Bookmark, BookmarksInfo } from '../models/bookmark';
+import { Bookmark, BookmarksInfo, createBookmark } from '../models/bookmark';
 
 /**
  * Execute the process of register command.
@@ -77,7 +77,7 @@ function identifyInput(input: string): Bookmark | undefined {
  */
 function identifyURLInput(input: string): Bookmark | undefined {
     if (input.startsWith("http://") || input.startsWith("https://")) {
-        return { type: "url", detail: input };
+        return createBookmark("url", input);
     }
     return undefined;
 }
@@ -92,9 +92,9 @@ function identifyFileInput(input: string): Bookmark | undefined {
         if (fs.existsSync(input)) {
             var stat = fs.statSync(input);
             if (stat.isDirectory()) {
-                return { type: "folder", detail: input };
+                return createBookmark("folder", input);
             } else {
-                return { type: "file", detail: input };
+                return createBookmark("file", input);
             }
         } else {
             return undefined;

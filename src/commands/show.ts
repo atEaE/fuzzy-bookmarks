@@ -22,14 +22,14 @@ export function showExecute(config: FzbConfig): void {
         vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". Please check the existence of the file.`);
         return;
     }
-    var bookmarks = jsonutils.safeParse<BookmarksInfo>(blob);
-    if (!bookmarks) {
+    var bookmarksInfo = jsonutils.safeParse<BookmarksInfo>(blob);
+    if (!bookmarksInfo) {
         vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". The format is different from what is expected.`);
         return;
     }
-    var items = bookmarks.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
+    var items = bookmarksInfo.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
     if (items.length === 0) {
-        items.push({ type: "nil", label: "$(issues)", description: "Does not exist bookmarks." });
+        items.push({ id: "---", type: "nil", label: "$(issues)", description: "Does not exist bookmarks." });
     }
 
     vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {

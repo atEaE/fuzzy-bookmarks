@@ -28,6 +28,11 @@
 			},
 			{
 				"category": "FzB",
+				"title": "Remove Bookmarks",
+				"command": "fzb.removeBookmarks"
+			},
+			{
+				"category": "FzB",
 				"title": "Setup Fuzzy Bookmarks",
 				"command": "fzb.setupBookmarks"
 			}
@@ -87,6 +92,8 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
-		"open": "^8.0.6"
+		"@types/uuid": "^8.3.0",
+		"open": "^8.0.6",
+		"uuid": "^8.3.2"
 	}
 }

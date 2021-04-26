@@ -1,3 +1,4 @@
+import * as uuid from 'uuid';
 
 /**
  * BookmarkType is used to indicate the type of bookmark.
@@ -29,6 +30,11 @@ export interface BookmarksInfo {
  */
 export interface Bookmark {
     /**
+     * identify
+     */
+    id: string
+
+    /**
      * Indicates the type of bookmark.
      */
     type: BookmarkType
@@ -43,6 +49,11 @@ export interface Bookmark {
  * Display label.
  */
 export interface BookmarkLabel {
+    /**
+     * identify
+     */
+    id: string
+
     /**
      * label
      */
@@ -60,12 +71,23 @@ export interface BookmarkLabel {
 }
 
 /**
+ * Create a bookmark
+ * @param type type
+ * @param detail bookmark detail
+ * @returns bookmark
+ */
+export function createBookmark(type: BookmarkType, detail: string): Bookmark {
+    return { id: uuid.v4(), type: type, detail: detail }
+}
+
+/**
  * Create the items needed to display the Pick.
  * @param bookmark bookmark
  * @return bookmarklabel
  */
 export function createBookmarkLabel(bookmark: Bookmark): BookmarkLabel {
     return {
+        id: bookmark.id,
         label: getLabel(bookmark.type),
         type: bookmark.type,
         description: bookmark.detail,
