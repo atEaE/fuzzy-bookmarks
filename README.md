@@ -1,5 +1,8 @@
 # Fuzzy Bookmarks
 
+### ⚠️Attention️️⚠️ : 
+`Fuzzy Bookmark` is currently in beta. Please note that the commands and the format of the saved files may be different when it is officially released.
+
 This is an extension that allows you to register various things as bookmarks and call them up easily.  
 Register your frequently used files, URLs, and folders for a comfortable "VSCode Life"!
 
