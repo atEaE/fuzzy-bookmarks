@@ -2,7 +2,7 @@
 /**
  * BookmarkType is used to indicate the type of bookmark.
  */
-type BookmarkType = "file" | "url" | "folder" | "unknown" | "nil";
+type BookmarkType = "file" | "url" | "folder" | "nil";
 
 /**
  * Format version.
