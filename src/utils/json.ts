@@ -9,7 +9,7 @@
  */
 export function safeParse<T>(text: string, reviver?: (this: any, key: string, value: any) => any): T | undefined {
     try {
-        return JSON.parse(text) as T;
+        return JSON.parse(text, reviver) as T;
     } catch {
         return undefined;
     }
