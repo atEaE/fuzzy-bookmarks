@@ -36,5 +36,8 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: Build
+      - name: Run test
+        run: yarn test
+
+      - name: Run build
         run: yarn compile
