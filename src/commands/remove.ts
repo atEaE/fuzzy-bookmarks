@@ -35,7 +35,7 @@ export function removeExecute(config: FzbConfig): void {
 
     var path = fileutils.resolveHome(config.defaultBookmarkFullPath());
     vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {
-        if (!item) return;
+        if (!item) {return;}
 
         if (bookmarksInfo) {
             bookmarksInfo.bookmarks = bookmarksInfo.bookmarks.filter(b => b.id !== item.id);

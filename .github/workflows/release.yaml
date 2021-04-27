@@ -28,3 +28,10 @@ jobs:
 
       - name: Run build
         run: yarn compile
+
+      - name: VSCode Release extesion
+        uses: JCofman/vscodeaction@master
+        env:
+          PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
+        with:
+          args: publish -p $PUBLISHER_TOKEN

@@ -37,7 +37,7 @@ export function registerExecute(config: FzbConfig): void {
 
             var bk = identifyInput(input);
             if (!bk) {
-                vscode.window.showWarningMessage("Sorry.. Unable to identify your input. ")
+                vscode.window.showWarningMessage("Sorry.. Unable to identify your input. ");
                 return;
             }
 

@@ -77,7 +77,7 @@ export interface BookmarkLabel {
  * @returns bookmark
  */
 export function createBookmark(type: BookmarkType, detail: string): Bookmark {
-    return { id: uuid.v4(), type: type, detail: detail }
+    return { id: uuid.v4(), type: type, detail: detail };
 }
 
 /**
