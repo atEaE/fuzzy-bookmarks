@@ -1,6 +1,6 @@
 # Fuzzy Bookmarks
 
-### ⚠️Attention️️⚠️ : 
+### ⚠️Attention️️⚠️
 `Fuzzy Bookmark` is currently in beta. Please note that the commands and the format of the saved files may be different when it is officially released.
 
 This is an extension that allows you to register various things as bookmarks and call them up easily.  
@@ -15,6 +15,9 @@ Register your bookmark.
 
 ### 3. FzB: Show Bookmarks
 You can refer to pre-registered bookmarks.
+
+### 4. FzB: Show Bookmarks
+You can delete the Bookmarks you have registered.
 
 ## Usage
 ### 1. Setup
