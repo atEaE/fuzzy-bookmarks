@@ -30,7 +30,7 @@ jobs:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-${{ matrix.node-version }}-yarn-
 
       - name: Install package
         if: steps.yarn-cache.outputs.cache-hit != 'true'
