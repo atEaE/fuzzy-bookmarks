@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.23.0, 11.15.0, 12.22.1]
+        node-version: [12.22.1]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -23,8 +23,8 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: Run test
-        run: yarn test
+      - name: Run lint
+        run: yarn lint
 
       - name: Run build
         run: yarn compile
