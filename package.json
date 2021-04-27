@@ -1,9 +1,23 @@
 {
 	"name": "fuzzy-bookmarks",
 	"displayName": "fuzzy-bookmarks",
-	"description": "fuzzy bookmarks",
-	"version": "0.0.1",
+	"description": "VSCode extension for managing miscellaneous bookmarks.",
+	"version": "0.1.0-beta",
+	"publisher": "atEaE",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/atEaE/fuzzy-bookmarks"
+	},
+	"bugs": {
+		"url": "https://github.com/atEaE/fuzzy-bookmarks/issues"
+	},
+	"keywords": [
+		"bookmark",
+		"bookmarks",
+		"vscode",
+		"fuzzy"
+	],
 	"engines": {
 		"vscode": "^1.55.0"
 	},

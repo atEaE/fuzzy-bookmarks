@@ -1,9 +1,4 @@
 # Change Log
 
-All notable changes to the "fuzzy-bookmarks" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+## 0.1.0-beta - 27 April 2021
+- Beta test version released.

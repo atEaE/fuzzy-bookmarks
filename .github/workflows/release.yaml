@@ -1,0 +1,40 @@
+name: Release Fuzzy Bookmarks
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.23.0, 11.15.0, 12.22.1]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup node with ${{ matrix.node-version }}
+        uses: actions/setup-node@master
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      
+      - name: Cache
+        id: yarn-cache
+        uses: actions/cache@master
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install package
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install
+
+      - name: Build
+        run: yarn compile
