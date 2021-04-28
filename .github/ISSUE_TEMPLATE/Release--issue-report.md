@@ -11,8 +11,15 @@ assignees: 'atEaE'
 Summary information about the release  
 
 ## Included Issues
+### [New or Update Feature]
 - #xxx
+
+### [Bugfix]
 - #xxx
+
+### [Documentation]
+- #xxx
+
 
 ## Remarks
 Remarks information
