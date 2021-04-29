@@ -20,6 +20,5 @@ Summary information about the release
 ### [Documentation]
 - #xxx
 
-
 ## Remarks
-Remarks information
+- Estimated release date : yyyy/mm/dd
