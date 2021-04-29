@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as jsonutils from '../utils/json';
+import * as extsutils from '../utils/extensions';
 import * as fileutils from '../utils/file';
+import * as common from './common';
 import { FzbConfig } from '../contributes';
 import { Bookmark, BookmarksInfo, createBookmark } from '../models/bookmark';
 
@@ -17,15 +18,17 @@ export function registerExecute(config: FzbConfig): void {
         return;
     }
 
-    var blob = fileutils.safeReadFileSync(fileutils.resolveHome(config.defaultBookmarkFullPath()), "utf-8");
-    if (!blob) {
-        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". Please check the existence of the file.`);
-        return;
-    }
-    var bookmarksInfo = jsonutils.safeParse<BookmarksInfo>(blob);
-    if (!bookmarksInfo) {
-        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". The format is different from what is expected.`);
-        return;
+    // load file
+    var bookmarksInfo: BookmarksInfo;
+    try {
+        bookmarksInfo = common.loadBookmarksInfo(config);
+    } catch (e) {
+        if (e instanceof extsutils.FzbExtensionsError) {
+            vscode.window.showWarningMessage(e.message);
+            return;
+        } else {
+            throw e;
+        }
     }
 
     var path = fileutils.resolveHome(config.defaultBookmarkFullPath());
@@ -41,7 +44,21 @@ export function registerExecute(config: FzbConfig): void {
                 return;
             }
 
-            bookmarksInfo?.bookmarks.push(bk);
+            switch (bk.type) {
+                case "file":
+                    bookmarksInfo?.fileBookmarks.push(bk);
+                    break;
+                case "folder":
+                    bookmarksInfo?.folderBookmarks.push(bk);
+                    break;
+                case "url":
+                    bookmarksInfo?.urlBookmarks.push(bk);
+                    break;
+                default:
+                    vscode.window.showWarningMessage("Sorry.. Unable to identify your input. ");
+                    return;
+            }
+
             try {
                 fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: "utf-8" });
                 vscode.window.showInformationMessage("Bookmarking is complete🔖");
@@ -89,8 +106,9 @@ function identifyURLInput(input: string): Bookmark | undefined {
  */
 function identifyFileInput(input: string): Bookmark | undefined {
     try {
-        if (fs.existsSync(input)) {
-            var stat = fs.statSync(input);
+        var path = fileutils.resolveHome(input);
+        if (fs.existsSync(path)) {
+            var stat = fs.statSync(path);
             if (stat.isDirectory()) {
                 return createBookmark("folder", input);
             } else {

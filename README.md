@@ -7,17 +7,8 @@ This is an extension that allows you to register various things as bookmarks and
 Register your frequently used files, URLs, and folders for a comfortable "VSCode Life"!
 
 ## Features
-### 1. FzB: Setup Fuzzy Bookmarks
-Perform setup to use the extension.
-
-### 2. FzB: Register Bookmarks
-Register your bookmark.
-
-### 3. FzB: Show Bookmarks
-You can refer to pre-registered bookmarks.
-
-### 4. FzB: Show Bookmarks
-You can delete the Bookmarks you have registered.
+- Easily register "file", "folder", and "url" as bookmarks.
+- Quickly search and browse Bookmarks from the command palette.
 
 ## Usage
 ### 1. Setup
@@ -36,6 +27,19 @@ If the file does not exist, or if you enter a value with an unidentified schema,
 Finally, let's check the values we registered!  
 Open the Command Pallet and search for `FzB: Show Bookmarks`.  
 All you have to do is select one of the registered bookmarks.
+
+## Commands
+### 1. FzB: Setup Fuzzy Bookmarks
+Perform setup to use the extension.
+
+### 2. FzB: Register Bookmarks
+Register your bookmark.
+
+### 3. FzB: Show Bookmarks
+You can refer to pre-registered bookmarks.
+
+### 4. FzB: Show Bookmarks
+You can delete the Bookmarks you have registered.
 
 ## Contributing
 Pull requests and stars are always welcome.  

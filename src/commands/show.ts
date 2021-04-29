@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as open from 'open';
-import * as jsonutils from '../utils/json';
+import * as extsutils from '../utils/extensions';
 import * as fileutils from '../utils/file';
+import * as common from './common';
 import { FzbConfig } from '../contributes';
 import { BookmarksInfo, BookmarkLabel, createBookmarkLabel } from '../models/bookmark';
 
@@ -17,19 +18,24 @@ export function showExecute(config: FzbConfig): void {
         return;
     }
 
-    var blob = fileutils.safeReadFileSync(fileutils.resolveHome(config.defaultBookmarkFullPath()), "utf-8");
-    if (!blob) {
-        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". Please check the existence of the file.`);
-        return;
+    // load file
+    var bookmarksInfo: BookmarksInfo;
+    try {
+        bookmarksInfo = common.loadBookmarksInfo(config);
+    } catch (e) {
+        if (e instanceof extsutils.FzbExtensionsError) {
+            vscode.window.showWarningMessage(e.message);
+            return;
+        } else {
+            throw e;
+        }
     }
-    var bookmarksInfo = jsonutils.safeParse<BookmarksInfo>(blob);
-    if (!bookmarksInfo) {
-        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". The format is different from what is expected.`);
-        return;
-    }
-    var items = bookmarksInfo.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
+
+    var concatBk = common.concatBookmark(bookmarksInfo.fileBookmarks, bookmarksInfo.folderBookmarks, bookmarksInfo.urlBookmarks);
+    var items = concatBk.map<BookmarkLabel>(b => createBookmarkLabel(b));
     if (items.length === 0) {
-        items.push({ id: "---", type: "nil", label: "$(issues)", description: "Does not exist bookmarks." });
+        vscode.window.showWarningMessage("Bookmark has not been registered.");
+        return;
     }
 
     vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {
@@ -45,8 +51,6 @@ export function showExecute(config: FzbConfig): void {
             case "url":
                 showUrl(config, item.description);
                 break;
-            case "nil":
-                break;
             default:
                 break;;
         }
@@ -60,7 +64,8 @@ export function showExecute(config: FzbConfig): void {
  */
 function showFile(config: FzbConfig, description: string | undefined) {
     if (description) {
-        vscode.window.showTextDocument(vscode.Uri.file(description), {
+        var path = fileutils.resolveHome(description);
+        vscode.window.showTextDocument(vscode.Uri.file(path), {
             preview: false,
         });
     }
@@ -73,12 +78,13 @@ function showFile(config: FzbConfig, description: string | undefined) {
  */
 function showFolder(config: FzbConfig, description: string | undefined) {
     if (description) {
+        var path = fileutils.resolveHome(description);
         switch (config.directoryOpenType()) {
             case "terminal":
-                vscode.commands.executeCommand("openInTerminal", vscode.Uri.file(description));
+                vscode.commands.executeCommand("openInTerminal", vscode.Uri.file(path));
                 break;
             case "explorer":
-                open(description);
+                open(path);
                 break;
             default:
                 break;
