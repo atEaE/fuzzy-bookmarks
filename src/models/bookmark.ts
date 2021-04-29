@@ -3,12 +3,12 @@ import * as uuid from 'uuid';
 /**
  * BookmarkType is used to indicate the type of bookmark.
  */
-type BookmarkType = "file" | "url" | "folder" | "nil";
+type BookmarkType = "file" | "url" | "folder";
 
 /**
  * Format version.
  */
-export const FORMAT_VERSION = "1.0.0";
+export const FORMAT_VERSION = "2.0.0";
 
 /**
  * BookmarksInfo is the metadata used for storage.
@@ -20,9 +20,19 @@ export interface BookmarksInfo {
     version: string
 
     /**
-     * Bookmarks.
+     * File bookmarks.
      */
-    bookmarks: Bookmark[]
+    fileBookmarks: Bookmark[]
+
+    /**
+     * Folder bookmarks.
+     */
+    folderBookmarks: Bookmark[]
+
+    /**
+     * URL bookmarks.
+     */
+    urlBookmarks: Bookmark[]
 }
 
 /**
@@ -68,6 +78,14 @@ export interface BookmarkLabel {
      * label detail
      */
     description: string
+}
+
+/**
+ * Create a bookmarksInfo
+ * @returns bookmarksInfo
+ */
+export function cerateBookmarksInfo(): BookmarksInfo {
+    return { version: FORMAT_VERSION, fileBookmarks: [], folderBookmarks: [], urlBookmarks: [] };
 }
 
 /**
