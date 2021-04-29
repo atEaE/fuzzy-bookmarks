@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as open from 'open';
 import * as extsutils from '../utils/extensions';
+import * as fileutils from '../utils/file';
 import * as common from './common';
 import { FzbConfig } from '../contributes';
 import { BookmarksInfo, BookmarkLabel, createBookmarkLabel } from '../models/bookmark';
@@ -63,7 +64,8 @@ export function showExecute(config: FzbConfig): void {
  */
 function showFile(config: FzbConfig, description: string | undefined) {
     if (description) {
-        vscode.window.showTextDocument(vscode.Uri.file(description), {
+        var path = fileutils.resolveHome(description);
+        vscode.window.showTextDocument(vscode.Uri.file(path), {
             preview: false,
         });
     }
@@ -76,12 +78,13 @@ function showFile(config: FzbConfig, description: string | undefined) {
  */
 function showFolder(config: FzbConfig, description: string | undefined) {
     if (description) {
+        var path = fileutils.resolveHome(description);
         switch (config.directoryOpenType()) {
             case "terminal":
-                vscode.commands.executeCommand("openInTerminal", vscode.Uri.file(description));
+                vscode.commands.executeCommand("openInTerminal", vscode.Uri.file(path));
                 break;
             case "explorer":
-                open(description);
+                open(path);
                 break;
             default:
                 break;
