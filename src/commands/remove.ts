@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as jsonutils from '../utils/json';
+import * as extsutils from '../utils/extensions';
 import * as fileutils from '../utils/file';
+import * as common from './common';
 import { FzbConfig } from '../contributes';
 import { BookmarksInfo, BookmarkLabel, createBookmarkLabel } from '../models/bookmark';
 
@@ -17,17 +18,21 @@ export function removeExecute(config: FzbConfig): void {
         return;
     }
 
-    var blob = fileutils.safeReadFileSync(fileutils.resolveHome(config.defaultBookmarkFullPath()), "utf-8");
-    if (!blob) {
-        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". Please check the existence of the file.`);
-        return;
+    // load file
+    var bookmarksInfo: BookmarksInfo;
+    try {
+        bookmarksInfo = common.loadBookmarksInfo(config);
+    } catch (e) {
+        if (e instanceof extsutils.FzbExtensionsError) {
+            vscode.window.showWarningMessage(e.message);
+            return;
+        } else {
+            throw e;
+        }
     }
-    var bookmarksInfo = jsonutils.safeParse<BookmarksInfo>(blob);
-    if (!bookmarksInfo) {
-        vscode.window.showErrorMessage(`Failed to load "${config.defaultBookmarkFullPath()}". The format is different from what is expected.`);
-        return;
-    }
-    var items = bookmarksInfo.bookmarks.map<BookmarkLabel>(b => createBookmarkLabel(b));
+
+    var concatBk = common.concatBookmark(bookmarksInfo.fileBookmarks, bookmarksInfo.folderBookmarks, bookmarksInfo.urlBookmarks);
+    var items = concatBk.map<BookmarkLabel>(b => createBookmarkLabel(b));
     if (items.length === 0) {
         vscode.window.showWarningMessage("Bookmark has not been registered.");
         return;
@@ -35,10 +40,22 @@ export function removeExecute(config: FzbConfig): void {
 
     var path = fileutils.resolveHome(config.defaultBookmarkFullPath());
     vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {
-        if (!item) {return;}
+        if (!item) { return; }
 
         if (bookmarksInfo) {
-            bookmarksInfo.bookmarks = bookmarksInfo.bookmarks.filter(b => b.id !== item.id);
+            switch (item.type) {
+                case "file":
+                    bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(b => b.id !== item.id);
+                    break;
+                case "folder":
+                    bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(b => b.id !== item.id);
+                    break;
+                case "url":
+                    bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(b => b.id !== item.id);
+                    break;
+                default:
+                    break;
+            }
 
             try {
                 fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: "utf-8" });
