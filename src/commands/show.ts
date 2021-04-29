@@ -81,6 +81,7 @@ function showFolder(config: FzbConfig, description: string | undefined) {
         var path = fileutils.resolveHome(description);
         switch (config.directoryOpenType()) {
             case "terminal":
+                // refs: https://github.com/microsoft/vscode/blob/94c9ea46838a9a619aeafb7e8afd1170c967bb55/src/vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution.ts#L30-L83
                 vscode.commands.executeCommand("openInTerminal", vscode.Uri.file(path));
                 break;
             case "explorer":
