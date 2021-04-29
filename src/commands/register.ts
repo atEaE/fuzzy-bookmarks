@@ -106,8 +106,9 @@ function identifyURLInput(input: string): Bookmark | undefined {
  */
 function identifyFileInput(input: string): Bookmark | undefined {
     try {
-        if (fs.existsSync(input)) {
-            var stat = fs.statSync(input);
+        var path = fileutils.resolveHome(input);
+        if (fs.existsSync(path)) {
+            var stat = fs.statSync(path);
             if (stat.isDirectory()) {
                 return createBookmark("folder", input);
             } else {
