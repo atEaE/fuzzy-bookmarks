@@ -47,11 +47,6 @@
 			},
 			{
 				"category": "FzB",
-				"title": "Export Bookmarks",
-				"command": "fzb.exportBookmarks"
-			},
-			{
-				"category": "FzB",
 				"title": "Setup Fuzzy Bookmarks",
 				"command": "fzb.setupBookmarks"
 			}

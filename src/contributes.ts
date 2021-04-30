@@ -22,7 +22,6 @@ export namespace ContributesCommands {
     export const SHOW_BOOKMARKS = "fzb.showBookmarks";
     export const REGISTER_BOOKMARKS = "fzb.registerBookmarks";
     export const REMOVE_BOOKMARKS = "fzb.removeBookmarks";
-    export const EXPORT_BOOKMARKS = "fzb.exportBookmarks";
     export const SETUP_BOOKMARKS = "fzb.setupBookmarks";
 }
 
