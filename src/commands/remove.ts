@@ -58,7 +58,7 @@ export function removeExecute(config: FzbConfig): void {
                         break;
                 }
             }
-        })
+        });
 
         try {
             fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: "utf-8" });
