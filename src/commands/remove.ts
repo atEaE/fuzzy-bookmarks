@@ -39,30 +39,33 @@ export function removeExecute(config: FzbConfig): void {
     }
 
     var path = fileutils.resolveHome(config.defaultBookmarkFullPath());
-    vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then((item) => {
-        if (!item) { return; }
+    vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true, canPickMany: true }).then((items) => {
+        if (!items || items.length === 0) { return; }
 
-        if (bookmarksInfo) {
-            switch (item.type) {
-                case "file":
-                    bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(b => b.id !== item.id);
-                    break;
-                case "folder":
-                    bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(b => b.id !== item.id);
-                    break;
-                case "url":
-                    bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(b => b.id !== item.id);
-                    break;
-                default:
-                    break;
+        items.forEach(item => {
+            if (bookmarksInfo) {
+                switch (item.type) {
+                    case "file":
+                        bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(b => b.id !== item.id);
+                        break;
+                    case "folder":
+                        bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(b => b.id !== item.id);
+                        break;
+                    case "url":
+                        bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(b => b.id !== item.id);
+                        break;
+                    default:
+                        break;
+                }
             }
+        })
 
-            try {
-                fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: "utf-8" });
-                vscode.window.showInformationMessage("Bookmark has been removed.");
-            } catch (e) {
-                vscode.window.showErrorMessage(e.message);
-            }
+        try {
+            fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: "utf-8" });
+            vscode.window.showInformationMessage("Bookmark has been removed.");
+        } catch (e) {
+            vscode.window.showErrorMessage(e.message);
+            return;
         }
     });
 }
