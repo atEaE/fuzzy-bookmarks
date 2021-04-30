@@ -38,8 +38,11 @@ Register your bookmark.
 ### 3. FzB: Show Bookmarks
 You can refer to pre-registered bookmarks.
 
-### 4. FzB: Show Bookmarks
+### 4. FzB: Remove Bookmarks
 You can delete the Bookmarks you have registered.
+
+### 5. FzB: Export Bookmarks
+Outputs the saved Bookmarks to a file.
 
 ## Contributing
 Pull requests and stars are always welcome.  
