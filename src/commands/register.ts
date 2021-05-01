@@ -33,53 +33,56 @@ export function registerExecute(config: FzbConfig): void {
 
     var path = fileutils.resolveHome(config.defaultBookmarkFullPath());
     vscode.window.showInputBox()
-        .then(input => {
-            if (!input) {
+        .then(detail => {
+            if (!detail) {
                 return;
             }
+            vscode.window.showInputBox({ prompt: "Enter arias. You can also skip this step." })
+                .then(alias => {
+                    var bk = identifyInput(detail, alias);
+                    if (!bk) {
+                        vscode.window.showWarningMessage("Sorry.. Unable to identify your input. ");
+                        return;
+                    }
 
-            var bk = identifyInput(input);
-            if (!bk) {
-                vscode.window.showWarningMessage("Sorry.. Unable to identify your input. ");
-                return;
-            }
+                    switch (bk.type) {
+                        case "file":
+                            bookmarksInfo?.fileBookmarks.push(bk);
+                            break;
+                        case "folder":
+                            bookmarksInfo?.folderBookmarks.push(bk);
+                            break;
+                        case "url":
+                            bookmarksInfo?.urlBookmarks.push(bk);
+                            break;
+                        default:
+                            vscode.window.showWarningMessage("Sorry.. Unable to identify your input. ");
+                            return;
+                    }
 
-            switch (bk.type) {
-                case "file":
-                    bookmarksInfo?.fileBookmarks.push(bk);
-                    break;
-                case "folder":
-                    bookmarksInfo?.folderBookmarks.push(bk);
-                    break;
-                case "url":
-                    bookmarksInfo?.urlBookmarks.push(bk);
-                    break;
-                default:
-                    vscode.window.showWarningMessage("Sorry.. Unable to identify your input. ");
-                    return;
-            }
-
-            try {
-                fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: "utf-8" });
-                vscode.window.showInformationMessage("Bookmarking is complete🔖");
-            } catch (e) {
-                vscode.window.showErrorMessage(e.message);
-            }
+                    try {
+                        fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: "utf-8" });
+                        vscode.window.showInformationMessage("Bookmarking is complete🔖");
+                    } catch (e) {
+                        vscode.window.showErrorMessage(e.message);
+                    }
+                })
         });
 }
 
 /**
  * It identifies the input and creates a Bookmark based on the content.
- * @param input user input
+ * @param detail user input detail
+ * @param alias user input alias
  * @returns bookmark
  */
-function identifyInput(input: string): Bookmark | undefined {
-    var maybe = identifyURLInput(input);
+function identifyInput(detail: string, alias: string | undefined): Bookmark | undefined {
+    var maybe = identifyURLInput(detail, alias);
     if (maybe) {
         return maybe;
     }
 
-    maybe = identifyFileInput(input);
+    maybe = identifyFileInput(detail, alias);
     if (maybe) {
         return maybe;
     }
@@ -89,30 +92,32 @@ function identifyInput(input: string): Bookmark | undefined {
 
 /**
  * Determines if the input is a URL-type Bookmark.
- * @param input user input
+ * @param detail user input detail
+ * @param alias user input alias
  * @returns maybe bookmark
  */
-function identifyURLInput(input: string): Bookmark | undefined {
-    if (input.startsWith("http://") || input.startsWith("https://")) {
-        return createBookmark("url", input);
+function identifyURLInput(detail: string, alias: string | undefined): Bookmark | undefined {
+    if (detail.startsWith("http://") || detail.startsWith("https://")) {
+        return createBookmark("url", detail, alias);
     }
     return undefined;
 }
 
 /**
  * Determines if the input is a File-type or Folder-type Bookmark.
- * @param input user input
+ * @param detail user input detail
+ * @param alias user input alias
  * @returns maybe bookmark
  */
-function identifyFileInput(input: string): Bookmark | undefined {
+function identifyFileInput(detail: string, alias: string | undefined): Bookmark | undefined {
     try {
-        var path = fileutils.resolveHome(input);
+        var path = fileutils.resolveHome(detail);
         if (fs.existsSync(path)) {
             var stat = fs.statSync(path);
             if (stat.isDirectory()) {
-                return createBookmark("folder", input);
+                return createBookmark("folder", detail, alias);
             } else {
-                return createBookmark("file", input);
+                return createBookmark("file", detail, alias);
             }
         } else {
             return undefined;
