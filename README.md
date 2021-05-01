@@ -1,4 +1,9 @@
 # Fuzzy Bookmarks
+![GitHub](https://img.shields.io/github/license/atEaE/fuzzy-bookmarks)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/atEaE/fuzzy-bookmarks)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/atEaE/fuzzy-bookmarks/Release%20Fuzzy%20Bookmarks/master)
+![GitHub issues](https://img.shields.io/github/issues-raw/atEaE/fuzzy-bookmarks)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/atEaE/fuzzy-bookmarks)
 
 ### ⚠️Attention️️⚠️
 `Fuzzy Bookmark` is currently in **beta**. Please note that the commands and the format of the saved files may be different when it is officially released.
@@ -19,7 +24,7 @@ Open the Command Pallet and search for `FzB: Setup Fuzzy Bookmarks`.
 ### 2. Register Bookmark
 After the setup is complete, let's register Bookmark.  
 Open the Command Pallet and search for `FzB: Register Bookmarks`.  
-It is possible to register　"URLs(`http://` or `https://` schema)", Files and Direcotries.  
+It is possible to register　URLs(`http://` or `https://` schema), Files and Direcotries.  
 The value you enter will be automatically recognized as a URL, file, or directory.
 If the file does not exist, or if you enter a value with an unidentified schema, the registration will not take place.
 
