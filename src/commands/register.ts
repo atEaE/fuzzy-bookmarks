@@ -66,7 +66,7 @@ export function registerExecute(config: FzbConfig): void {
                     } catch (e) {
                         vscode.window.showErrorMessage(e.message);
                     }
-                })
+                });
         });
 }
 

@@ -124,9 +124,9 @@ export function createBookmarkLabel(bookmark: Bookmark): BookmarkLabel {
  * @param alias bookmark alias
  */
 function getLabel(type: BookmarkType, alias: string | undefined): string {
-    var label: string = ""
+    var label: string = "";
     if (alias) {
-        label = alias
+        label = alias;
     }
 
     switch (type) {
