@@ -51,5 +51,9 @@ export abstract class CommandBase implements models.ICommand {
   }
 
   abstract name(): string;
-  abstract execute(execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager): void;
+  abstract execute(
+    execArgs: models.IVSCodeExecutableArguments,
+    configManager: models.IConfigManager,
+    bookmarkManager: models.IBookmarkManager
+  ): void;
 }

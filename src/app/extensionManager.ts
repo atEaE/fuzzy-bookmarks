@@ -22,26 +22,31 @@ export class ExtensionManager implements models.IExtensionManager {
    * @param context vscode extension context.
    */
   public activate(context: models.IVSCodeExtensionContext): void {
-    this.registerCommand(context);
+    this.registerCommands(context);
   }
 
-  private registerCommand(context: models.IVSCodeExtensionContext) {
-    let command = this.commandManager.get('fzb.exportBookmarks');
-    if (!command) {
-      throw new ReferenceError(`fzb.exportBookmarks no set to an instance`)
-    }
-
-    let disposable = this.vscode.commands.registerCommand(command.name(), (uri: models.IVSCodeUri) => {
-      let execArgs: models.IVSCodeExecutableArguments = {
-        uri,
-      };
-      try {
-        // @ts-ignore
-        command.execute(execArgs, this.configManager);
-      } catch (e) {
-        this.vscode.window.showErrorMessage(e.message);
+  /**
+   * Performs the command registration process.
+   * @param context vscode exetension context.
+   */
+  private registerCommands(context: models.IVSCodeExtensionContext) {
+    Object.entries(models.CommandNames).forEach(([_, value]) => {
+      let command = this.commandManager.get(value);
+      if (!command) {
+        throw new ReferenceError(`${value} no set to an instance`)
       }
+      let disposable = this.vscode.commands.registerCommand(command.name(), (uri: models.IVSCodeUri) => {
+        let execArgs: models.IVSCodeExecutableArguments = {
+          uri,
+        };
+        try {
+          // @ts-ignore
+          command.execute(execArgs, this.configManager);
+        } catch (e) {
+          this.vscode.window.showErrorMessage(e.message);
+        }
+      })
+      context.subscriptions.push(disposable);
     })
-    context.subscriptions.push(disposable);
   }
 }

@@ -25,7 +25,11 @@ export class Export extends CommandBase {
   /**
    * Execute.
    */
-  public execute(_: models.IVSCodeExecutableArguments, configManager: models.IConfigManager): void {
+  public execute(
+    _execArgs: models.IVSCodeExecutableArguments,
+    configManager: models.IConfigManager,
+    _bookMarkManager: models.IBookmarkManager
+  ): void {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
