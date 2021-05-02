@@ -4,7 +4,11 @@ import * as models from '../models';
  * Class for managing extensions
  */
 export class ExtensionManager implements models.IExtensionManager {
-  constructor(private vscode: models.IVSCode, private commandManager: models.ICommandManager) {
+  constructor(
+    private vscode: models.IVSCode,
+    private commandManager: models.ICommandManager,
+    private configManager: models.IConfigManager
+  ) {
     if (!vscode) {
       throw new ReferenceError(`'vscode' not set to an instance`);
     }
@@ -33,8 +37,8 @@ export class ExtensionManager implements models.IExtensionManager {
       };
       try {
         // @ts-ignore
-        command.execute(execArgs);
-      } catch(e) {
+        command.execute(execArgs, this.configManager);
+      } catch (e) {
         this.vscode.window.showErrorMessage(e.message);
       }
     })

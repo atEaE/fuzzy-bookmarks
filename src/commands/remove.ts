@@ -4,7 +4,7 @@ import * as extsutils from '../utils/extensions';
 import * as fileutils from '../utils/file';
 import * as common from './common';
 import { IFzbConfig } from '../contributes';
-import { IBookmarksInfo, IBookmarkLabel, createBookmarkLabel } from '../models/bookmark';
+import { IBookmarksInfo, IBookmarkLabel, createBookmarkLabel } from '../models/bookmark/bookmark_old';
 
 /**
  * Execute the process of remove command.

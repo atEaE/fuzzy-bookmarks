@@ -4,6 +4,8 @@ import 'reflect-metadata';
 import * as models from '../models';
 import { ExtensionManager } from '../app/extensionManager';
 import { CommandManager } from '../commands/commandManager';
+import { ConfigManager } from '../configuration';
+import { BookmarkManager } from '../bookmark';
 
 type Class = new (...args: any[]) => unknown;
 
@@ -47,8 +49,10 @@ export class CompositionService {
    */
   private initInjectionMap(): void {
     this.injectableClasses = [
-      [ExtensionManager, [models.SYMBOLS.IVSCode, models.SYMBOLS.ICommandManager]],
-      [CommandManager, [models.SYMBOLS.IVSCode]],
+      [BookmarkManager, []],
+      [ConfigManager, [models.SYMBOLS.IVSCode]],
+      [ExtensionManager, [models.SYMBOLS.IVSCode, models.SYMBOLS.ICommandManager, models.SYMBOLS.IConfigManager]],
+      [CommandManager, [models.SYMBOLS.IVSCode, models.SYMBOLS.IBookmarkManager]],
     ];
     this.dispose();
   }
@@ -78,6 +82,8 @@ export class CompositionService {
       this.container.bind<T>(identifier);
 
     bind<models.IVSCode>(models.SYMBOLS.IVSCode).toConstantValue(vscode);
+    bind<models.IConfigManager>(models.SYMBOLS.IConfigManager).to(ConfigManager);
+    bind<models.IBookmarkManager>(models.SYMBOLS.IBookmarkManager).to(BookmarkManager);
     bind<models.IExtensionManager>(models.SYMBOLS.IExtensionManager).to(ExtensionManager);
     bind<models.ICommandManager>(models.SYMBOLS.ICommandManager).to(CommandManager);
   }

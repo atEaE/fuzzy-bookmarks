@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as fileutils from '../utils/file';
 import { IFzbConfig } from '../contributes';
-import { cerateBookmarksInfo } from '../models/bookmark';
+import { cerateBookmarksInfo } from '../models/bookmark/bookmark_old';
 
 /**
  * Execute the process of setup command.

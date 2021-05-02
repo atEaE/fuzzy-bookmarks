@@ -1,6 +1,5 @@
 import * as jsonutils from '../utils/json';
 import * as fileutils from '../utils/file';
-import { IFzbConfig } from '../contributes';
 
 // ok
 import * as models from '../models';
@@ -17,20 +16,20 @@ export abstract class CommandBase implements models.ICommand {
 
   /**
    * Load Bookmark information.
-   * @param config Fuzzy Bookmarks configuration
+   * @param fullPath bookmark.json fullpath.
    * @returns bookmarksinfo
    */
-  protected loadBookmarksInfo(config: IFzbConfig): models.IBookmarksInfo {
-    var blob = fileutils.safeReadFileSync(fileutils.resolveHome(config.defaultBookmarkFullPath()), 'utf-8');
+  protected loadBookmarksInfo(fullPath: string): models.IBookmarksInfo {
+    var blob = fileutils.safeReadFileSync(fileutils.resolveHome(fullPath), 'utf-8');
     if (!blob) {
       throw new ExtensionCommandError(
-        `Failed to load "${config.defaultBookmarkFullPath()}". Please check the existence of the file.`,
+        `Failed to load "${fullPath}". Please check the existence of the file.`,
       );
     }
     var bookmarksInfo = jsonutils.safeParse<models.IBookmarksInfo>(blob);
     if (!bookmarksInfo) {
       throw new ExtensionCommandError(
-        `Failed to load "${config.defaultBookmarkFullPath()}". The format is different from what is expected.`,
+        `Failed to load "${fullPath}". The format is different from what is expected.`,
       );
     }
     return bookmarksInfo;
@@ -52,5 +51,5 @@ export abstract class CommandBase implements models.ICommand {
   }
 
   abstract name(): string;
-  abstract execute(execArgs: models.IVSCodeExecutableArguments): void;
+  abstract execute(execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager): void;
 }

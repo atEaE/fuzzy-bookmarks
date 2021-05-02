@@ -1,3 +1,7 @@
+import { IVSCodeUri } from './vscodeUri';
+
+export type VSCodeConfigurationScope = IVSCodeUri;
+
 export interface IVSCodeWorkspaceConfiguration {
   /**
    * Return a value from this configuration.

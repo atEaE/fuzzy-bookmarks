@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { IVSCodeExecutableArguments } from '../models/vscode/executableArguments';
+import { IVSCodeExecutableArguments } from '../models/vscode/vscodeExecutableArguments';
 import * as fs from 'fs';
 import * as extsutils from '../utils/extensions';
 import * as fileutils from '../utils/file';
 import * as common from './common';
 import { IFzbConfig } from '../contributes';
-import { IBookmark, IBookmarksInfo, createBookmark } from '../models/bookmark';
+import { IBookmark, IBookmarksInfo, createBookmark } from '../models/bookmark/bookmark_old';
 
 /**
  * Determines if the input is a URL-type Bookmark.

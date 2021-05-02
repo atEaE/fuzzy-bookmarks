@@ -27,11 +27,6 @@ export namespace ContributesCommands {
 }
 
 /**
- * Directory open type.
- */
-type DirectoryOpenType = 'terminal' | 'explorer';
-
-/**
  * Contributes configuration.
  */
 export namespace ContributesConfig {
@@ -61,31 +56,30 @@ export namespace ContributesConfig {
     /**
      * Returns the default directory path to save the bookmark.
      * @returns defaultBookmarkDir
-     */
     public defaultDir(): string | undefined {
       return this.config.get(DEFAULT_DIR);
     }
+    */
 
     /**
      * Returns the default file name where the bookmarks are saved.
      * @returns defaultFileName
-     */
     public defaultFileName(): string | undefined {
       return this.config.get(DEFAULT_FILENAME);
     }
+    */
 
     /**
      * Returns the Open method of the directory.
      * @returns open type.
-     */
     public directoryOpenType(): DirectoryOpenType | undefined {
       return this.config.get(DIRECTORY_OPEN_TYPE);
     }
+    */
 
     /**
      * Returns the full path of the Bookmark file.
      * @returns bookmarkFullPath
-     */
     public defaultBookmarkFullPath(): string | undefined {
       var dir = this.defaultDir();
       var file = this.defaultFileName();
@@ -94,6 +88,7 @@ export namespace ContributesConfig {
       }
       return undefined;
     }
+    */
 
     /**
      * Evaluate the validity of Fuzzy Bookmark setting information.
