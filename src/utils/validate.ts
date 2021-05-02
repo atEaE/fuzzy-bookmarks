@@ -1,13 +1,13 @@
 /**
  * It has the ability to verify the validity of an object.
  */
-export interface ValidateObject {
-    validate(): [boolean, InValidReason]
+export interface IValidateObject {
+    validate(): [boolean, IInValidReason]
 }
 
 /**
  * Stores the reason for invalidation.
  */
-export interface InValidReason {
+export interface IInValidReason {
     error: string
 }
