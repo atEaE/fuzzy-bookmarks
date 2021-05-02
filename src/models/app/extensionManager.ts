@@ -1,3 +1,5 @@
+import { IVSCodeExtensionContext } from '../vscode';
+
 export interface IExtensionManager {
-    activate(): void;
+  activate(context: IVSCodeExtensionContext): void;
 }

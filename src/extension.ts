@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const service = new CompositionService();
   const extensionManager = service.get<models.IExtensionManager>(models.SYMBOLS.IExtensionManager);
-  extensionManager.activate();
+  extensionManager.activate(context);
 
   var cmdManager = new CommandManager();
   cmdManager.register(context, config, ContributesCommands.REGISTER_BOOKMARKS, commands.registerExecute);
