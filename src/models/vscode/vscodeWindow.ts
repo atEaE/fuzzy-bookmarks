@@ -11,7 +11,7 @@ export interface IVSCodeWindow {
     items: T[] | Thenable<T[]>,
     options: IVSCodeQuickPickOptions & { canPickMany: true },
     token?: IVSCodeCancellationToken,
-  ): Thenable<string | undefined>;
+  ): Thenable<T[] | undefined>;
   showQuickPick<T extends IVSCodeQuickPickItem>(
     items: T[] | Thenable<T[]>,
     options?: IVSCodeQuickPickOptions,

@@ -1,79 +1,100 @@
-import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as extsutils from '../utils/extensions';
 import * as fileutils from '../utils/file';
-import * as common from './common';
-import { IFzbConfig } from '../contributes';
-import { IBookmarksInfo, IBookmarkLabel, createBookmarkLabel } from '../models/bookmark/bookmark_old';
+
+// ok
+import * as models from '../models';
+import { CommandBase } from './base';
+import { ExtensionCommandError } from './extensionCommandError';
 
 /**
- * Execute the process of remove command.
- * @param config Fuzzy Bookmark configuration.
- * @returns void
+ * Remove command.
  */
-export function removeExecute(config: IFzbConfig): void {
-  var [ok, reason] = config.validate();
-  if (!ok) {
-    vscode.window.showWarningMessage(reason.error);
-    return;
+export class Remove extends CommandBase {
+  constructor(private vscode: models.IVSCode, bookmarkManager: models.IBookmarkManager) {
+    super(bookmarkManager);
   }
 
-  // load file
-  var bookmarksInfo: IBookmarksInfo;
-  try {
-    bookmarksInfo = common.loadBookmarksInfo(config);
-  } catch (e) {
-    if (e instanceof extsutils.FzbExtensionsError) {
-      vscode.window.showWarningMessage(e.message);
+  /**
+   * Return the command name.
+   * @returns command name.
+   */
+  public name(): string {
+    return 'fzb.removeBookmarks';
+  }
+
+  /**
+   * Execute.
+   */
+  public execute(
+    _execArgs: models.IVSCodeExecutableArguments,
+    configManager: models.IConfigManager,
+    _bookMarkManager: models.IBookmarkManager,
+  ): void {
+    // validate cofiguration.
+    var [ok, reason] = configManager.validate();
+    if (!ok) {
+      this.vscode.window.showWarningMessage(reason.error);
       return;
-    } else {
-      throw e;
     }
-  }
 
-  var concatBk = common.concatBookmark(
-    bookmarksInfo.fileBookmarks,
-    bookmarksInfo.folderBookmarks,
-    bookmarksInfo.urlBookmarks,
-  );
-  var items = concatBk.map<IBookmarkLabel>(b => createBookmarkLabel(b));
-  if (items.length === 0) {
-    vscode.window.showWarningMessage('Bookmark has not been registered.');
-    return;
-  }
-
-  var path = fileutils.resolveHome(config.defaultBookmarkFullPath());
-  vscode.window
-    .showQuickPick(items, { matchOnDescription: true, matchOnDetail: true, canPickMany: true })
-    .then(selected => {
-      if (!selected || selected.length === 0) {
+    // load file
+    var bookmarksInfo: models.IBookmarksInfo;
+    try {
+      let fullPath = configManager.defaultBookmarkFullPath();
+      bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
+    } catch (e) {
+      if (e instanceof ExtensionCommandError) {
+        this.vscode.window.showWarningMessage(e.message);
         return;
+      } else {
+        throw e;
       }
+    }
 
-      selected.forEach(item => {
-        if (bookmarksInfo) {
-          switch (item.type) {
-            case 'file':
-              bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(b => b.id !== item.id);
-              break;
-            case 'folder':
-              bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(b => b.id !== item.id);
-              break;
-            case 'url':
-              bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(b => b.id !== item.id);
-              break;
-            default:
-              break;
+    var concatBk = this.concatBookmark(
+      bookmarksInfo.fileBookmarks,
+      bookmarksInfo.folderBookmarks,
+      bookmarksInfo.urlBookmarks,
+    );
+    var items = concatBk.map<models.IBookmarkLabel>(b => this.bookmarkManager.createBookmarkLabel(b));
+    if (items.length === 0) {
+      this.vscode.window.showWarningMessage('Bookmark has not been registered.');
+      return;
+    }
+
+    var path = fileutils.resolveHome(configManager.defaultBookmarkFullPath());
+    this.vscode.window
+      .showQuickPick(items, { matchOnDescription: true, matchOnDetail: true, canPickMany: true })
+      .then(selected => {
+        if (!selected || selected.length === 0) {
+          return;
+        }
+
+        selected.forEach(item => {
+          if (bookmarksInfo) {
+            switch (item.type) {
+              case 'file':
+                bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(b => b.id !== item.id);
+                break;
+              case 'folder':
+                bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(b => b.id !== item.id);
+                break;
+              case 'url':
+                bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(b => b.id !== item.id);
+                break;
+              default:
+                break;
+            }
           }
+        });
+
+        try {
+          fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: 'utf-8' });
+          this.vscode.window.showInformationMessage('Bookmark has been removed.');
+        } catch (e) {
+          this.vscode.window.showErrorMessage(e.message);
+          return;
         }
       });
-
-      try {
-        fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: 'utf-8' });
-        vscode.window.showInformationMessage('Bookmark has been removed.');
-      } catch (e) {
-        vscode.window.showErrorMessage(e.message);
-        return;
-      }
-    });
+  }
 }
