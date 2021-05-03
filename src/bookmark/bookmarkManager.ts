@@ -4,7 +4,7 @@ import * as uuid from 'uuid';
 /**
  * Format version.
  */
-const FORMAT_VERSION = '2.1.0';
+const FORMAT_VERSION = '2.2.0';
 
 export class BookmarkManager implements models.IBookmarkManager {
   /**

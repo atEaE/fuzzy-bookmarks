@@ -9,7 +9,7 @@ import { CommandBase } from './base';
  * Setup command.
  */
 export class Setup extends CommandBase {
-  constructor(private vscode: models.IVSCode, bookmarkManager: models.IBookmarkManager) {
+  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
     super(bookmarkManager);
   }
 
@@ -29,7 +29,7 @@ export class Setup extends CommandBase {
     configManager: models.IConfigManager,
     bookMarkManager: models.IBookmarkManager,
   ): void {
-    this.vscode.window.showInputBox({
+    this.vscodeManager.window.showInputBox({
       // eslint-disable-next-line max-len
       prompt: `Create a file "${configManager.defaultBookmarkFullPath()}" as setup. If you want to continue, enter "y|yes".`,
     })
@@ -38,29 +38,29 @@ export class Setup extends CommandBase {
         try {
           // check folder.
           if (fs.existsSync(fileutils.resolveHome(configManager.defaultDir()))) {
-            this.vscode.window.showInformationMessage('OK! Confirmed the existence of the destination folder.');
+            this.vscodeManager.window.showInformationMessage('OK! Confirmed the existence of the destination folder.');
           } else {
             fs.mkdirSync(fileutils.resolveHome(configManager.defaultDir()));
             // eslint-disable-next-line max-len
-            this.vscode.window.showInformationMessage(`OK! Create a new destination folder(${configManager.defaultDir()}).`);
+            this.vscodeManager.window.showInformationMessage(`OK! Create a new destination folder(${configManager.defaultDir()}).`);
           }
 
           // check file.
           if (fs.existsSync(fileutils.resolveHome(configManager.defaultBookmarkFullPath()))) {
-            this.vscode.window.showInformationMessage('OK! Confirmed the existence of the destination file.');
+            this.vscodeManager.window.showInformationMessage('OK! Confirmed the existence of the destination file.');
           } else {
             var blob = JSON.stringify(this.bookmarkManager.cerateBookmarksInfo());
             fs.writeFileSync(fileutils.resolveHome(configManager.defaultBookmarkFullPath()), blob);
-            this.vscode.window.showInformationMessage(
+            this.vscodeManager.window.showInformationMessage(
               `OK! Create a new destination folder(${configManager.defaultBookmarkFullPath()}).`,
             );
           }
-          this.vscode.window.showInformationMessage('Setup completed! ');
+          this.vscodeManager.window.showInformationMessage('Setup completed! ');
         } catch (e) {
-          this.vscode.window.showErrorMessage('An error occurred during setup.' + e.message);
+          this.vscodeManager.window.showErrorMessage('An error occurred during setup.' + e.message);
         }
       } else {
-        this.vscode.window.showWarningMessage('Abort setup.');
+        this.vscodeManager.window.showWarningMessage('Abort setup.');
       }
     })
   }

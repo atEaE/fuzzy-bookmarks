@@ -5,11 +5,11 @@ import * as models from '../models';
  */
 export class ExtensionManager implements models.IExtensionManager {
   constructor(
-    private vscode: models.IVSCode,
+    private vscodeManager: models.IVSCodeManager,
     private commandManager: models.ICommandManager,
     private configManager: models.IConfigManager
   ) {
-    if (!vscode) {
+    if (!vscodeManager) {
       throw new ReferenceError(`'vscode' not set to an instance`);
     }
     if (!commandManager) {
@@ -35,7 +35,7 @@ export class ExtensionManager implements models.IExtensionManager {
       if (!command) {
         throw new ReferenceError(`${value} no set to an instance`)
       }
-      let disposable = this.vscode.commands.registerCommand(command.name(), (uri: models.IVSCodeUri) => {
+      let disposable = this.vscodeManager.commands.registerCommand(command.name(), (uri: models.IVSCodeUri) => {
         let execArgs: models.IVSCodeExecutableArguments = {
           uri,
         };
@@ -43,7 +43,7 @@ export class ExtensionManager implements models.IExtensionManager {
           // @ts-ignore
           command.execute(execArgs, this.configManager);
         } catch (e) {
-          this.vscode.window.showErrorMessage(e.message);
+          this.vscodeManager.window.showErrorMessage(e.message);
         }
       })
       context.subscriptions.push(disposable);

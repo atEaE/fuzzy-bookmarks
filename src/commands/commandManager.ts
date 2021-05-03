@@ -10,8 +10,8 @@ import { Register } from './register';
  */
 export class CommandManager implements models.ICommandManager {
   private commands: models.ICommand[] = [];
-  constructor(private vscode: models.IVSCode, private bookmarkManager: models.IBookmarkManager) {
-    if (!vscode) {
+  constructor(private vscodeManager: models.IVSCodeManager, private bookmarkManager: models.IBookmarkManager) {
+    if (!vscodeManager) {
       throw new ReferenceError(`'vscode' not set to an instance`);
     }
     if (!bookmarkManager) {
@@ -28,10 +28,10 @@ export class CommandManager implements models.ICommandManager {
    * Initialize command manager.
    */
   private init(): void {
-    this.commands.push(new Register(this.vscode, this.bookmarkManager));
-    this.commands.push(new Show(this.vscode, this.bookmarkManager));
-    this.commands.push(new Remove(this.vscode, this.bookmarkManager));
-    this.commands.push(new Export(this.vscode, this.bookmarkManager));
-    this.commands.push(new Setup(this.vscode, this.bookmarkManager));
+    this.commands.push(new Register(this.vscodeManager, this.bookmarkManager));
+    this.commands.push(new Show(this.vscodeManager, this.bookmarkManager));
+    this.commands.push(new Remove(this.vscodeManager, this.bookmarkManager));
+    this.commands.push(new Export(this.vscodeManager, this.bookmarkManager));
+    this.commands.push(new Setup(this.vscodeManager, this.bookmarkManager));
   }
 }

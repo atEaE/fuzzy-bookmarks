@@ -10,7 +10,7 @@ import { ExtensionCommandError } from './extensionCommandError';
  * Remove command.
  */
 export class Remove extends CommandBase {
-  constructor(private vscode: models.IVSCode, bookmarkManager: models.IBookmarkManager) {
+  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
     super(bookmarkManager);
   }
 
@@ -33,7 +33,7 @@ export class Remove extends CommandBase {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
-      this.vscode.window.showWarningMessage(reason.error);
+      this.vscodeManager.window.showWarningMessage(reason.error);
       return;
     }
 
@@ -44,7 +44,7 @@ export class Remove extends CommandBase {
       bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
     } catch (e) {
       if (e instanceof ExtensionCommandError) {
-        this.vscode.window.showWarningMessage(e.message);
+        this.vscodeManager.window.showWarningMessage(e.message);
         return;
       } else {
         throw e;
@@ -58,12 +58,12 @@ export class Remove extends CommandBase {
     );
     var items = concatBk.map<models.IBookmarkLabel>(b => this.bookmarkManager.createBookmarkLabel(b));
     if (items.length === 0) {
-      this.vscode.window.showWarningMessage('Bookmark has not been registered.');
+      this.vscodeManager.window.showWarningMessage('Bookmark has not been registered.');
       return;
     }
 
     var path = fileutils.resolveHome(configManager.defaultBookmarkFullPath());
-    this.vscode.window
+    this.vscodeManager.window
       .showQuickPick(items, { matchOnDescription: true, matchOnDetail: true, canPickMany: true })
       .then(selected => {
         if (!selected || selected.length === 0) {
@@ -90,9 +90,9 @@ export class Remove extends CommandBase {
 
         try {
           fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: 'utf-8' });
-          this.vscode.window.showInformationMessage('Bookmark has been removed.');
+          this.vscodeManager.window.showInformationMessage('Bookmark has been removed.');
         } catch (e) {
-          this.vscode.window.showErrorMessage(e.message);
+          this.vscodeManager.window.showErrorMessage(e.message);
           return;
         }
       });

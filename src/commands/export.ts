@@ -10,7 +10,7 @@ import { ExtensionCommandError } from './extensionCommandError';
  * Export command.
  */
 export class Export extends CommandBase {
-  constructor(private vscode: models.IVSCode, bookmarkManager: models.IBookmarkManager) {
+  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
     super(bookmarkManager);
   }
 
@@ -33,7 +33,7 @@ export class Export extends CommandBase {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
-      this.vscode.window.showWarningMessage(reason.error);
+      this.vscodeManager.window.showWarningMessage(reason.error);
       return;
     }
 
@@ -44,7 +44,7 @@ export class Export extends CommandBase {
       bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
     } catch (e) {
       if (e instanceof ExtensionCommandError) {
-        this.vscode.window.showWarningMessage(e.message);
+        this.vscodeManager.window.showWarningMessage(e.message);
         return;
       } else {
         throw e;
@@ -52,19 +52,19 @@ export class Export extends CommandBase {
     }
 
     try {
-      var currentRootFolder = this.vscode.workspace.workspaceFolders
-        ? this.vscode.workspace.workspaceFolders[0].uri.path
+      var currentRootFolder = this.vscodeManager.workspace.workspaceFolders
+        ? this.vscodeManager.workspace.workspaceFolders[0].uri.path
         : undefined;
 
       if (currentRootFolder) {
         var exportPath = path.join(currentRootFolder, 'export-bookmarks.json');
         fs.writeFileSync(exportPath, JSON.stringify(bookmarksInfo), { encoding: 'utf-8' });
-        this.vscode.window.showInformationMessage(`Export Success. (${exportPath})`);
+        this.vscodeManager.window.showInformationMessage(`Export Success. (${exportPath})`);
       } else {
-        this.vscode.window.showWarningMessage(`Directory has not been opened.`);
+        this.vscodeManager.window.showWarningMessage(`Directory has not been opened.`);
       }
     } catch (e) {
-      this.vscode.window.showErrorMessage(e.message);
+      this.vscodeManager.window.showErrorMessage(e.message);
     }
   }
 }

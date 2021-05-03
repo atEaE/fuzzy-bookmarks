@@ -10,7 +10,7 @@ import { ExtensionCommandError } from './extensionCommandError';
  * Register command.
  */
 export class Register extends CommandBase {
-  constructor(private vscode: models.IVSCode, bookmarkManager: models.IBookmarkManager) {
+  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
     super(bookmarkManager);
   }
 
@@ -33,7 +33,7 @@ export class Register extends CommandBase {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
-      this.vscode.window.showWarningMessage(reason.error);
+      this.vscodeManager.window.showWarningMessage(reason.error);
       return;
     }
 
@@ -44,7 +44,7 @@ export class Register extends CommandBase {
       bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
     } catch (e) {
       if (e instanceof ExtensionCommandError) {
-        this.vscode.window.showWarningMessage(e.message);
+        this.vscodeManager.window.showWarningMessage(e.message);
         return;
       } else {
         throw e;
@@ -56,14 +56,14 @@ export class Register extends CommandBase {
     if (execArgs.uri) {
       option = { value: execArgs.uri.path, ignoreFocusOut: false };
     }
-    this.vscode.window.showInputBox(option).then(detail => {
+    this.vscodeManager.window.showInputBox(option).then(detail => {
       if (!detail) {
         return;
       }
-      this.vscode.window.showInputBox({ prompt: 'Enter arias. You can also skip this step.' }).then(alias => {
+      this.vscodeManager.window.showInputBox({ prompt: 'Enter arias. You can also skip this step.' }).then(alias => {
         var bk = this.identifyInput(detail, alias);
         if (!bk) {
-          this.vscode.window.showWarningMessage('Sorry.. Unable to identify your input. ');
+          this.vscodeManager.window.showWarningMessage('Sorry.. Unable to identify your input. ');
           return;
         }
 
@@ -78,15 +78,15 @@ export class Register extends CommandBase {
             bookmarksInfo?.urlBookmarks.push(bk);
             break;
           default:
-            this.vscode.window.showWarningMessage('Sorry.. Unable to identify your input. ');
+            this.vscodeManager.window.showWarningMessage('Sorry.. Unable to identify your input. ');
             return;
         }
 
         try {
           fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: 'utf-8' });
-          this.vscode.window.showInformationMessage('Bookmarking is complete🔖');
+          this.vscodeManager.window.showInformationMessage('Bookmarking is complete🔖');
         } catch (e) {
-          this.vscode.window.showErrorMessage(e.message);
+          this.vscodeManager.window.showErrorMessage(e.message);
         }
       });
     });

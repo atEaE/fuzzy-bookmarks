@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as fileutils from '../utils/file';
+
 // ok
 import * as models from '../models';
 import { CommandBase } from './base';
@@ -7,7 +10,7 @@ import { ExtensionCommandError } from './extensionCommandError';
  * Export command.
  */
 export class Show extends CommandBase {
-  constructor(private vscode: models.IVSCode, bookmarkManager: models.IBookmarkManager) {
+  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
     super(bookmarkManager);
   }
 
@@ -30,7 +33,7 @@ export class Show extends CommandBase {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
-      this.vscode.window.showWarningMessage(reason.error);
+      this.vscodeManager.window.showWarningMessage(reason.error);
       return;
     }
 
@@ -41,7 +44,7 @@ export class Show extends CommandBase {
       bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
     } catch (e) {
       if (e instanceof ExtensionCommandError) {
-        this.vscode.window.showWarningMessage(e.message);
+        this.vscodeManager.window.showWarningMessage(e.message);
         return;
       } else {
         throw e;
@@ -55,15 +58,33 @@ export class Show extends CommandBase {
     );
     var items = concatBk.map<models.IBookmarkLabel>(b => this.bookmarkManager.createBookmarkLabel(b));
     if (items.length === 0) {
-      this.vscode.window.showWarningMessage('Bookmark has not been registered.');
+      this.vscodeManager.window.showWarningMessage('Bookmark has not been registered.');
       return;
     }
-    this.vscode.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then(item => {
+    this.vscodeManager.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then(item => {
       if (!item) {
         return;
       }
-      this.vscode.window.showInformationMessage(item.description);
+      this.vscodeManager.window.showInformationMessage(item.description);
+      switch(item.type) {
+        case 'file':
+          this.showFile(item.description);
+          break;
+        case 'folder':
+          break;
+        case 'url':
+          break;
+        default:
+          break;
+      }
     });
+  }
+
+  private showFile(description: string | undefined) {
+    if (description) {
+      var path = fileutils.resolveHome(description);
+      this.vscodeManager.window.showTextDocument(this.vscodeManager.urlHelper.file(path));
+    }
   }
 }
 
@@ -72,14 +93,7 @@ export class Show extends CommandBase {
  * @param config Fuzzy Bookmark configuration.
  * @param description bookmark description.
 
-function showFile(_: IFzbConfig, description: string | undefined) {
-  if (description) {
-    var path = fileutils.resolveHome(description);
-    vscode.window.showTextDocument(vscode.Uri.file(path), {
-      preview: false,
-    });
-  }
-}
+function
 */
 
 /**

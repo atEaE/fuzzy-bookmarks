@@ -4,4 +4,6 @@ export const SYMBOLS = {
     ICommandManager: Symbol.for('ICommandManager'),
     IBookmarkManager: Symbol.for('IBookmarkManager'),
     IConfigManager: Symbol.for('IConfigManager'),
+    IVSCodeManager: Symbol.for('IVSCodeManager'),
+    IVSCodeUriHelper: Symbol.for('IVSCodeUriHelper'),
 };

@@ -6,6 +6,7 @@ import { ExtensionManager } from '../app/extensionManager';
 import { CommandManager } from '../commands/commandManager';
 import { ConfigManager } from '../configuration';
 import { BookmarkManager } from '../bookmark';
+import { VSCodeManager } from '../vscode/vscodeManager';
 
 type Class = new (...args: any[]) => unknown;
 
@@ -50,9 +51,13 @@ export class CompositionService {
   private initInjectionMap(): void {
     this.injectableClasses = [
       [BookmarkManager, []],
-      [ConfigManager, [models.SYMBOLS.IVSCode]],
-      [ExtensionManager, [models.SYMBOLS.IVSCode, models.SYMBOLS.ICommandManager, models.SYMBOLS.IConfigManager]],
-      [CommandManager, [models.SYMBOLS.IVSCode, models.SYMBOLS.IBookmarkManager]],
+      [VSCodeManager, [models.SYMBOLS.IVSCode, models.SYMBOLS.IVSCodeUriHelper]],
+      [ConfigManager, [models.SYMBOLS.IVSCodeManager]],
+      [CommandManager, [models.SYMBOLS.IVSCodeManager, models.SYMBOLS.IBookmarkManager]],
+      [
+        ExtensionManager,
+        [models.SYMBOLS.IVSCodeManager, models.SYMBOLS.ICommandManager, models.SYMBOLS.IConfigManager],
+      ],
     ];
     this.dispose();
   }
@@ -82,9 +87,11 @@ export class CompositionService {
       this.container.bind<T>(identifier);
 
     bind<models.IVSCode>(models.SYMBOLS.IVSCode).toConstantValue(vscode);
+    bind<models.IVSCodeUriHelper>(models.SYMBOLS.IVSCodeUriHelper).toConstantValue(vscode.Uri);
+    bind<models.IVSCodeManager>(models.SYMBOLS.IVSCodeManager).to(VSCodeManager);
     bind<models.IConfigManager>(models.SYMBOLS.IConfigManager).to(ConfigManager);
     bind<models.IBookmarkManager>(models.SYMBOLS.IBookmarkManager).to(BookmarkManager);
-    bind<models.IExtensionManager>(models.SYMBOLS.IExtensionManager).to(ExtensionManager);
     bind<models.ICommandManager>(models.SYMBOLS.ICommandManager).to(CommandManager);
+    bind<models.IExtensionManager>(models.SYMBOLS.IExtensionManager).to(ExtensionManager);
   }
 }

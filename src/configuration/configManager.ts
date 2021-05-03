@@ -9,12 +9,12 @@ const CONFIG_CATEGORY = 'fzb';
 
 export class ConfigManager implements models.IConfigManager {
   private config: models.IVSCodeWorkspaceConfiguration;
-  constructor(private vscode: models.IVSCode) {
-    if (!vscode) {
+  constructor(private vscodeManager: models.IVSCodeManager) {
+    if (!vscodeManager) {
       throw new ReferenceError(`'vscode' not set to an instance`);
     }
 
-    this.config = this.vscode.workspace.getConfiguration(CONFIG_CATEGORY);
+    this.config = this.vscodeManager.workspace.getConfiguration(CONFIG_CATEGORY);
   }
 
   /**
