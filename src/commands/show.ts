@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import * as open from 'open';
 import * as fileutils from '../utils/file';
 
 // ok
@@ -25,10 +25,10 @@ export class Show extends CommandBase {
   /**
    * Execute.
    */
-   public execute(
+  public execute(
     _execArgs: models.IVSCodeExecutableArguments,
     configManager: models.IConfigManager,
-    bookMarkManager: models.IBookmarkManager
+    bookMarkManager: models.IBookmarkManager,
   ): void {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
@@ -66,13 +66,15 @@ export class Show extends CommandBase {
         return;
       }
       this.vscodeManager.window.showInformationMessage(item.description);
-      switch(item.type) {
+      switch (item.type) {
         case 'file':
           this.showFile(item.description);
           break;
         case 'folder':
+          this.showFolder(configManager, item.description);
           break;
         case 'url':
+          this.showUrl(item.description);
           break;
         default:
           break;
@@ -80,82 +82,49 @@ export class Show extends CommandBase {
     });
   }
 
+  /**
+   * Refer to the files registered in Bookmark.
+   * @param description bookmark description.
+   */
   private showFile(description: string | undefined) {
     if (description) {
       var path = fileutils.resolveHome(description);
-      this.vscodeManager.window.showTextDocument(this.vscodeManager.urlHelper.file(path));
+      this.vscodeManager.window.showTextDocument(this.vscodeManager.urlHelper.file(path), {
+        preview: false,
+      });
+    }
+  }
+
+  /**
+   * Refer to the folder registered in Bookmark.
+   * @param configManager Fuzzy Bookmark configuration manager.
+   * @param description bookmark description.
+   */
+  private showFolder(configManager: models.IConfigManager, description: string | undefined) {
+    if (description) {
+      var path = fileutils.resolveHome(description);
+      switch (configManager.directoryOpenType()) {
+        case 'terminal':
+          // eslint-disable-next-line max-len
+          // refs: https://github.com/microsoft/vscode/blob/94c9ea46838a9a619aeafb7e8afd1170c967bb55/src/vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution.ts#L30-L83
+          this.vscodeManager.commands.executeCommand('openInTerminal', this.vscodeManager.urlHelper.file(path));
+          break;
+        case 'explorer':
+          open(path);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  /**
+   * Refer to the URL registered in Bookmark.
+   * @param description bookmark description.
+   */
+  private showUrl(description: string | undefined) {
+    if (description) {
+      open(description);
     }
   }
 }
-
-/**
- * Refer to the files registered in Bookmark.
- * @param config Fuzzy Bookmark configuration.
- * @param description bookmark description.
-
-function
-*/
-
-/**
- * Refer to the folder registered in Bookmark.
- * @param config Fuzzy Bookmark configuration.
- * @param description bookmark description.
-
-function showFolder(config: IFzbConfig, description: string | undefined) {
-  if (description) {
-    var path = fileutils.resolveHome(description);
-    switch (config.directoryOpenType()) {
-      case 'terminal':
-        // eslint-disable-next-line max-len
-        // refs: https://github.com/microsoft/vscode/blob/94c9ea46838a9a619aeafb7e8afd1170c967bb55/src/vs/workbench
-        /contrib/externalTerminal/browser/externalTerminal.contribution.ts#L30-L83
-        vscode.commands.executeCommand('openInTerminal', vscode.Uri.file(path));
-        break;
-      case 'explorer':
-        open(path);
-        break;
-      default:
-        break;
-    }
-  }
-}
- */
-
-/**
- * Refer to the URL registered in Bookmark.
- * @param config Fuzzy Bookmark configuration.
- * @param description bookmark description.
-
-function showUrl(_: IFzbConfig, description: string | undefined) {
-  if (description) {
-    open(description);
-  }
-}
- */
-
-/**
- * Execute the process of show command.
- * @param config Fuzzy Bookmark configuration.
- * @returns void
-
-export function showExecute(config: IFzbConfig): void {
-  var [ok, reason] = config.validate();
-  if (!ok) {
-    vscode.window.showWarningMessage(reason.error);
-    return;
-  }
-
-  // load file
-  var bookmarksInfo: IBookmarksInfo;
-  try {
-    bookmarksInfo = common.loadBookmarksInfo(config);
-  } catch (e) {
-    if (e instanceof extsutils.FzbExtensionsError) {
-      vscode.window.showWarningMessage(e.message);
-      return;
-    } else {
-      throw e;
-    }
-  }
-}
-*/
