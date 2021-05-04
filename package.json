@@ -86,7 +86,7 @@
 			"explorer/context": [
 				{
 					"command": "fzb.registerBookmarks",
-					"when": "explorerResourceIsFolder",
+					"when": "explorerViewletFocus",
 					"group": "FuzzyBookmarks@1"
 				}
 			]
