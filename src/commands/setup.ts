@@ -27,7 +27,7 @@ export class Setup extends CommandBase {
   public execute(
     _execArgs: models.IVSCodeExecutableArguments,
     configManager: models.IConfigManager,
-    bookMarkManager: models.IBookmarkManager,
+    _bookMarkManager: models.IBookmarkManager,
   ): void {
     this.vscodeManager.window.showInputBox({
       // eslint-disable-next-line max-len

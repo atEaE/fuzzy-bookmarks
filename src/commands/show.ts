@@ -28,7 +28,7 @@ export class Show extends CommandBase {
   public execute(
     _execArgs: models.IVSCodeExecutableArguments,
     configManager: models.IConfigManager,
-    bookMarkManager: models.IBookmarkManager,
+    _bookMarkManager: models.IBookmarkManager,
   ): void {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
@@ -65,7 +65,6 @@ export class Show extends CommandBase {
       if (!item) {
         return;
       }
-      this.vscodeManager.window.showInformationMessage(item.description);
       switch (item.type) {
         case 'file':
           this.showFile(item.description);
