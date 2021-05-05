@@ -2,7 +2,7 @@
 	"name": "fuzzy-bookmarks",
 	"displayName": "fuzzy-bookmarks",
 	"description": "VSCode extension for managing miscellaneous bookmarks.",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"publisher": "atEaE",
 	"license": "MIT",
 	"repository": {
