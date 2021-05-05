@@ -2,6 +2,7 @@ name: Push workflow for Fuzzy Bookmarks
 on:
   push:
     branches:
+      - master
       - develop
       - hotfix/**
       - feature/**

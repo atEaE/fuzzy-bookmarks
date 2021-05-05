@@ -1,8 +1,7 @@
 name: Release Fuzzy Bookmarks
 on:
-  release:
-    types:
-      - created
+  # manual trigger.
+  workflow_dispatch: {}
 
 jobs:
   publish:

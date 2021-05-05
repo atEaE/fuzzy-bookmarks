@@ -18,7 +18,7 @@ export class Setup extends CommandBase {
    * @returns command name.
    */
   public name(): string {
-    return 'fzb.setupBookmark';
+    return 'fzb.setupBookmarks';
   }
 
   /**
