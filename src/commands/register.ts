@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { URL } from 'url';
 import * as fileutils from '../utils/file';
 
 // ok
@@ -6,11 +7,16 @@ import * as models from '../models';
 import { CommandBase } from './base';
 import { ExtensionCommandError } from './extensionCommandError';
 
+const _empty = '';
+
 /**
  * Register command.
  */
 export class Register extends CommandBase {
-  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
+  constructor(
+    private vscodeManager: models.IVSCodeManager,
+    bookmarkManager: models.IBookmarkManager,
+  ) {
     super(bookmarkManager);
   }
 
@@ -41,7 +47,7 @@ export class Register extends CommandBase {
     var bookmarksInfo: models.IBookmarksInfo;
     try {
       let fullPath = configManager.defaultBookmarkFullPath();
-      bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
+      bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : _empty);
     } catch (e) {
       if (e instanceof ExtensionCommandError) {
         this.vscodeManager.window.showWarningMessage(e.message);
@@ -60,36 +66,95 @@ export class Register extends CommandBase {
       if (!detail) {
         return;
       }
-      this.vscodeManager.window.showInputBox({ prompt: 'Enter arias. You can also skip this step.' }).then(alias => {
-        var bk = this.identifyInput(detail, alias);
-        if (!bk) {
-          this.vscodeManager.window.showWarningMessage('Sorry.. Unable to identify your input. ');
-          return;
-        }
 
-        switch (bk.type) {
-          case 'file':
-            bookmarksInfo?.fileBookmarks.push(bk);
-            break;
-          case 'folder':
-            bookmarksInfo?.folderBookmarks.push(bk);
-            break;
-          case 'url':
-            bookmarksInfo?.urlBookmarks.push(bk);
-            break;
-          default:
-            this.vscodeManager.window.showWarningMessage('Sorry.. Unable to identify your input. ');
+      var tAlias = this.complementAlias(detail);
+      this.vscodeManager.window
+        .showInputBox({
+          value: tAlias,
+          prompt: 'Enter arias. You can also skip this step.',
+        })
+        .then(alias => {
+          var bk = this.identifyInput(detail, alias);
+          if (!bk) {
+            this.vscodeManager.window.showWarningMessage(
+              'Sorry.. Unable to identify your input. ',
+            );
             return;
-        }
+          }
 
-        try {
-          fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: 'utf-8' });
-          this.vscodeManager.window.showInformationMessage('Bookmarking is complete🔖');
-        } catch (e) {
-          this.vscodeManager.window.showErrorMessage(e.message);
-        }
-      });
+          switch (bk.type) {
+            case 'file':
+              bookmarksInfo?.fileBookmarks.push(bk);
+              break;
+            case 'folder':
+              bookmarksInfo?.folderBookmarks.push(bk);
+              break;
+            case 'url':
+              bookmarksInfo?.urlBookmarks.push(bk);
+              break;
+            default:
+              this.vscodeManager.window.showWarningMessage(
+                'Sorry.. Unable to identify your input. ',
+              );
+              return;
+          }
+
+          try {
+            fs.writeFileSync(path, JSON.stringify(bookmarksInfo), {
+              encoding: 'utf-8',
+            });
+            this.vscodeManager.window.showInformationMessage(
+              'Bookmarking is complete🔖',
+            );
+          } catch (e) {
+            this.vscodeManager.window.showErrorMessage(e.message);
+          }
+        });
     });
+  }
+
+  /**
+   * Performs alias completion processing for URLs.
+   * @param detail user input
+   * @returns alias
+   */
+  private complementAliasForURL(detail: string): string | undefined {
+    if (detail.startsWith('http://') || detail.startsWith('https://')) {
+      return new URL(detail).hostname;
+    }
+    return undefined;
+  }
+
+  /**
+   * Performs alias completion processing for File and Directory.
+   * @param detail user input
+   * @returns alias
+   */
+  private complementAliasForFile(detail: string): string | undefined {
+    try {
+      var file = this.vscodeManager.urlHelper.file(detail);
+      return file.path.split('/').reverse()[0];
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Performs alias completion processing.
+   * @param detail user input
+   * @returns alias
+   */
+  private complementAlias(detail: string): string {
+    var maybe = this.complementAliasForURL(detail);
+    if (maybe) {
+      return maybe;
+    }
+
+    maybe = this.complementAliasForFile(detail);
+    if (maybe) {
+      return maybe;
+    }
+    return _empty;
   }
 
   /**
@@ -141,7 +206,10 @@ export class Register extends CommandBase {
    * @param alias user input alias
    * @returns bookmark
    */
-  private identifyInput(detail: string, alias: string | undefined): models.IBookmark | undefined {
+  private identifyInput(
+    detail: string,
+    alias: string | undefined,
+  ): models.IBookmark | undefined {
     var maybe = this.identifyURLInput(detail, alias);
     if (maybe) {
       return maybe;

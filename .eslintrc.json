@@ -112,15 +112,7 @@
             "allow": [
               "_watch",
               "_file",
-              "_file_light",
-              "_folder",
-              "_folder_open",
-              "_folder_light",
-              "_folder_light_open",
-              "_root_folder",
-              "_root_folder_open",
-              "_root_folder_light",
-              "_root_folder_light_open"
+              "_empty"
             ]
           }
         ],
