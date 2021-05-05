@@ -9,6 +9,7 @@ Please check the box for the relevant Pull Request category.
 - [ ] Features Add/Modify
 - [ ] Destructive feature Add/Modify
 - [ ] Documents Add/Modify
+- [ ] Refactoring
 
 # Checklist
 Please include the changes you have made as a checklist.

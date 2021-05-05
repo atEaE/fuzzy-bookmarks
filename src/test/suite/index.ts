@@ -6,15 +6,15 @@ export function run(): Promise<void> {
 	// Create the mocha test
 	const mocha = new Mocha({
 		ui: 'tdd',
-		color: true
+		color: true,
 	});
 
 	const testsRoot = path.resolve(__dirname, '..');
 
-	return new Promise((c, e) => {
+	return new Promise((resolver, reject) => {
 		glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
 			if (err) {
-				return e(err);
+				return reject(err);
 			}
 
 			// Add files to the test suite
@@ -24,14 +24,14 @@ export function run(): Promise<void> {
 				// Run the mocha test
 				mocha.run(failures => {
 					if (failures > 0) {
-						e(new Error(`${failures} tests failed.`));
+						reject(new Error(`${failures} tests failed.`));
 					} else {
-						c();
+						resolver();
 					}
 				});
-			} catch (err) {
-				console.error(err);
-				e(err);
+			} catch (ex) {
+				console.error(ex);
+				reject(ex);
 			}
 		});
 	});

@@ -2,7 +2,7 @@
 	"name": "fuzzy-bookmarks",
 	"displayName": "fuzzy-bookmarks",
 	"description": "VSCode extension for managing miscellaneous bookmarks.",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"publisher": "atEaE",
 	"license": "MIT",
 	"repository": {
@@ -47,6 +47,11 @@
 			},
 			{
 				"category": "FzB",
+				"title": "Export Bookmarks",
+				"command": "fzb.exportBookmarks"
+			},
+			{
+				"category": "FzB",
 				"title": "Setup Fuzzy Bookmarks",
 				"command": "fzb.setupBookmarks"
 			}
@@ -76,7 +81,16 @@
 					}
 				}
 			}
-		]
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "fzb.registerBookmarks",
+					"when": "explorerViewletFocus",
+					"group": "FuzzyBookmarks@1"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
@@ -97,8 +111,12 @@
 		"@typescript-eslint/eslint-plugin": "^4.14.1",
 		"@typescript-eslint/parser": "^4.14.1",
 		"eslint": "^7.19.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-import": "^2.22.1",
+		"eslint-plugin-prettier": "^3.4.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.2.1",
+		"prettier": "^2.2.1",
 		"ts-loader": "^8.0.14",
 		"typescript": "^4.1.3",
 		"vscode-test": "^1.5.0",
@@ -107,7 +125,9 @@
 	},
 	"dependencies": {
 		"@types/uuid": "^8.3.0",
+		"inversify": "^5.1.1",
 		"open": "^8.0.6",
+		"reflect-metadata": "^0.1.13",
 		"uuid": "^8.3.2"
 	}
 }
