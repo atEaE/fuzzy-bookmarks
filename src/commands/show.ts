@@ -111,6 +111,9 @@ export class Show extends CommandBase {
         case 'explorer':
           open(path);
           break;
+        case 'window':
+          this.vscodeManager.commands.executeCommand('vscode.openFolder', this.vscodeManager.urlHelper.file(path));
+          break;
         default:
           break;
       }

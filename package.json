@@ -74,7 +74,8 @@
 						"type": "string",
 						"enum": [
 							"terminal",
-							"explorer"
+							"explorer",
+							"window"
 						],
 						"default": "terminal",
 						"description": "Set the Open method when Bookmark is selected as the directory type."

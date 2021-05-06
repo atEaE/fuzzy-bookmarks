@@ -1,4 +1,4 @@
-export type DirectoryOpenType = 'terminal' | 'explorer';
+export type DirectoryOpenType = 'terminal' | 'explorer' | 'window';
 
 export enum ConfigurationKeys {
   defaultBookmarkDir = 'defaultBookmarkDir',
