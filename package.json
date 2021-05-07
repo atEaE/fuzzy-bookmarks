@@ -4,6 +4,7 @@
 	"description": "VSCode extension for managing miscellaneous bookmarks.",
 	"version": "0.3.1",
 	"publisher": "atEaE",
+	"icon": "resources/icon.png",
 	"license": "MIT",
 	"repository": {
 		"type": "git",

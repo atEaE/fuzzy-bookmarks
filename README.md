@@ -78,6 +78,10 @@ Any contributions you make are greatly appreciated.
 
 - [atEaE](https://github.com/atEaE)
 
+## Spectial Thanks
+
+- Icons made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/). Thank you so much for offering this for free.
+
 ## License
 
 MIT. Click [here](./LICENSE) for details.
