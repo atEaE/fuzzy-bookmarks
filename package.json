@@ -32,46 +32,43 @@
 	"contributes": {
 		"commands": [
 			{
-				"category": "FzB",
-				"title": "Show Bookmarks",
+				"category": "%command.category%",
+				"title": "%command.show.title%",
 				"command": "fzb.showBookmarks"
 			},
 			{
-				"category": "FzB",
-				"title": "Register Bookmarks",
+				"category": "%command.category%",
+				"title": "%command.register.title%",
 				"command": "fzb.registerBookmarks"
 			},
 			{
-				"category": "FzB",
-				"title": "Remove Bookmarks",
+				"category": "%command.category%",
+				"title": "%command.remove.title%",
 				"command": "fzb.removeBookmarks"
 			},
 			{
-				"category": "FzB",
-				"title": "Export Bookmarks",
+				"category": "%command.category%",
+				"title": "%command.export.title%",
 				"command": "fzb.exportBookmarks"
 			},
 			{
-				"category": "FzB",
-				"title": "Setup Fuzzy Bookmarks",
+				"category": "%command.category%",
+				"title": "%command.setup.title%",
 				"command": "fzb.setupBookmarks"
 			}
 		],
 		"configuration": [
 			{
-				"title": "FuzzyBookmarks",
+				"title": "%configuration.title%",
 				"properties": {
-					"fzb.defaultBookmarkDir": {
+					"fzb.saveBookmarkDir": {
+						"title": "%configuration.saveBookmarkDir.title%",
 						"type": "string",
 						"default": "~/.vscode/fzb",
-						"description": "Set a directory to save the bookmark."
-					},
-					"fzb.defaultBookmarkFileName": {
-						"type": "string",
-						"default": "bookmarks.json",
-						"description": "Set a file name to save the bookmark."
+						"markdownDescription": "%configuration.saveBookmarkDir.description%"
 					},
 					"fzb.directoryOpenType": {
+						"title": "%configuration.directoryOpenType.title%",
 						"type": "string",
 						"enum": [
 							"terminal",
@@ -79,7 +76,7 @@
 							"window"
 						],
 						"default": "terminal",
-						"description": "Set the Open method when Bookmark is selected as the directory type."
+						"markdownDescription": "%configuration.directoryOpenType.description%"
 					}
 				}
 			}
@@ -103,6 +100,7 @@
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "yarn run test-compile && yarn run lint",
 		"lint": "eslint src --ext ts",
+		"format": "yarn lint --fix",
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {

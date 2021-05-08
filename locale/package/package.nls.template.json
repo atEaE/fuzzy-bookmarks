@@ -1,0 +1,14 @@
+{
+    "command.category": "",
+    "command.show.title": "",
+    "command.register.title": "",
+    "command.remove.title": "",
+    "command.export.title": "",
+    "command.setup.title": "",
+
+    "configuration.title": "",
+    "configuration.saveBookmarkDir.title": "",
+    "configuration.saveBookmarkDir.description": "",
+    "configuration.directoryOpenType.title": "",
+    "configuration.directoryOpenType.description": ""
+}

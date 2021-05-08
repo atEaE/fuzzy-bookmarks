@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.4.0 - 9 May 2021
+
+## [Information]
+
+The key name in Configuration has been changed.
+Please be careful if you are configuring individual settings.
+
+- bef: `fzb.defaultBookmarkDir` → aft: `fzb.saveBookmarkDir`
+- bef: `fzb.defaultBookmarkFileName` → delete.
+
+***
+
 ## 0.3.1 - 6 May 2021
 
 Release notes: [#41](https://github.com/atEaE/fuzzy-bookmarks/issues/41)
@@ -15,6 +27,8 @@ Release notes: [#41](https://github.com/atEaE/fuzzy-bookmarks/issues/41)
 ### [Documentation]
 
 - none
+
+***
 
 ## 0.3.0 - 5 May 2021
 
@@ -34,6 +48,8 @@ Release notes: [#27](https://github.com/atEaE/fuzzy-bookmarks/issues/27)
 
 - [#31](https://github.com/atEaE/fuzzy-bookmarks/issues/31) There is no badge on the README.md
 - [#28](https://github.com/atEaE/fuzzy-bookmarks/issues/28) want to divide the PR template into "Merge" and "Release".
+
+***
 
 ## 0.2.0 - 29 April 2021
 
@@ -55,6 +71,8 @@ Release notes: [#12](https://github.com/atEaE/fuzzy-bookmarks/issues/12)
 - [#13](https://github.com/atEaE/fuzzy-bookmarks/issues/13) Workflow does not stop when lint error is raised
 - [#20](https://github.com/atEaE/fuzzy-bookmarks/issues/20) The "PR template" does not have a field for meta issues.
 - [#24](https://github.com/atEaE/fuzzy-bookmarks/issues/24) Add a column for "Estimated release date" to the ReleaseIssue.
+
+***
 
 ## 0.1.0 - 27 April 2021
 

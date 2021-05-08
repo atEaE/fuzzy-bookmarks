@@ -8,6 +8,7 @@ import * as models from '../models';
 const CONFIG_CATEGORY = 'fzb';
 
 export class ConfigManager implements models.IConfigManager {
+  private filename: string = 'bookmarks.json';
   private config: models.IVSCodeWorkspaceConfiguration;
   constructor(private vscodeManager: models.IVSCodeManager) {
     if (!vscodeManager) {
@@ -18,11 +19,11 @@ export class ConfigManager implements models.IConfigManager {
   }
 
   /**
-   * Returns the default directory path to save the bookmark.
-   * @returns defaultBookmarkDir
+   * Returns the directory path to save the bookmark.
+   * @returns saveBookmarkDir
    */
   public defaultDir(): string | undefined {
-    return this.config.get<string>(models.ConfigurationKeys.defaultBookmarkDir);
+    return this.config.get<string>(models.ConfigurationKeys.saveBookmarkDir);
   }
 
   /**
@@ -30,7 +31,7 @@ export class ConfigManager implements models.IConfigManager {
    * @returns defaultFileName
    */
   public defaultFileName(): string | undefined {
-    return this.config.get<string>(models.ConfigurationKeys.defaultBookmarkFileName);
+    return this.filename;
   }
 
   /**
@@ -64,15 +65,9 @@ export class ConfigManager implements models.IConfigManager {
         false,
         {
           // eslint-disable-next-line max-len
-          error: `Set the directory path where Bookmarks will be stored to "${CONFIG_CATEGORY + models.ConfigurationKeys.defaultBookmarkDir}" .`,
+          error: `Set the directory path where Bookmarks will be stored to "${CONFIG_CATEGORY + models.ConfigurationKeys.saveBookmarkDir}" .`,
         },
       ];
-    }
-    if (!this.defaultFileName() || !this.defaultFileName()?.trim()) {
-      return [
-        false,
-        // eslint-disable-next-line max-len
-        { error: `Set the file name for saving bookmarks to "${CONFIG_CATEGORY + models.ConfigurationKeys.defaultBookmarkFileName}" .` }];
     }
 
     if (!fs.existsSync(fileutils.resolveHome(this.defaultDir()))) {
