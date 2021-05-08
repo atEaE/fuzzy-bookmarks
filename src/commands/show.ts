@@ -3,16 +3,15 @@ import * as fileutils from '../utils/file';
 
 // ok
 import * as models from '../models';
-import { CommandBase } from './base';
-import { ExtensionCommandError } from './extensionCommandError';
 
 /**
  * Export command.
  */
-export class Show extends CommandBase {
-  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
-    super(bookmarkManager);
-  }
+export class Show implements models.ICommand {
+  constructor(
+    private vscodeManager: models.IVSCodeManager,
+    private bookmarkManager: models.IBookmarkManager,
+  ) {}
 
   /**
    * Return the command name.
@@ -40,45 +39,46 @@ export class Show extends CommandBase {
     // load file
     var bookmarksInfo: models.IBookmarksInfo;
     try {
+      // global
       let fullPath = configManager.defaultBookmarkFullPath();
-      bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
+      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(
+        fullPath ? fullPath : '',
+      );
     } catch (e) {
-      if (e instanceof ExtensionCommandError) {
-        this.vscodeManager.window.showWarningMessage(e.message);
-        return;
-      } else {
-        throw e;
-      }
-    }
-
-    var concatBk = this.concatBookmark(
-      bookmarksInfo.fileBookmarks,
-      bookmarksInfo.folderBookmarks,
-      bookmarksInfo.urlBookmarks,
-    );
-    var items = concatBk.map<models.IBookmarkLabel>(b => this.bookmarkManager.createBookmarkLabel(b));
-    if (items.length === 0) {
-      this.vscodeManager.window.showWarningMessage('Bookmark has not been registered.');
+      this.vscodeManager.window.showWarningMessage(e.message);
       return;
     }
-    this.vscodeManager.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then(item => {
-      if (!item) {
-        return;
-      }
-      switch (item.type) {
-        case 'file':
-          this.showFile(item.description);
-          break;
-        case 'folder':
-          this.showFolder(configManager, item.description);
-          break;
-        case 'url':
-          this.showUrl(item.description);
-          break;
-        default:
-          break;
-      }
-    });
+
+    var concatBk = this.bookmarkManager.sortAndConcatBookmark(bookmarksInfo);
+    var items = concatBk.map<models.IBookmarkLabel>(b =>
+      this.bookmarkManager.createBookmarkLabel(b),
+    );
+    if (items.length === 0) {
+      this.vscodeManager.window.showWarningMessage(
+        'Bookmark has not been registered.',
+      );
+      return;
+    }
+    this.vscodeManager.window
+      .showQuickPick(items, { matchOnDescription: true, matchOnDetail: true })
+      .then(item => {
+        if (!item) {
+          return;
+        }
+        switch (item.type) {
+          case 'file':
+            this.showFile(item.description);
+            break;
+          case 'folder':
+            this.showFolder(configManager, item.description);
+            break;
+          case 'url':
+            this.showUrl(item.description);
+            break;
+          default:
+            break;
+        }
+      });
   }
 
   /**
@@ -88,9 +88,12 @@ export class Show extends CommandBase {
   private showFile(description: string | undefined) {
     if (description) {
       var path = fileutils.resolveHome(description);
-      this.vscodeManager.window.showTextDocument(this.vscodeManager.urlHelper.file(path), {
-        preview: false,
-      });
+      this.vscodeManager.window.showTextDocument(
+        this.vscodeManager.urlHelper.file(path),
+        {
+          preview: false,
+        },
+      );
     }
   }
 
@@ -99,20 +102,29 @@ export class Show extends CommandBase {
    * @param configManager Fuzzy Bookmark configuration manager.
    * @param description bookmark description.
    */
-  private showFolder(configManager: models.IConfigManager, description: string | undefined) {
+  private showFolder(
+    configManager: models.IConfigManager,
+    description: string | undefined,
+  ) {
     if (description) {
       var path = fileutils.resolveHome(description);
       switch (configManager.directoryOpenType()) {
         case 'terminal':
           // eslint-disable-next-line max-len
           // refs: https://github.com/microsoft/vscode/blob/94c9ea46838a9a619aeafb7e8afd1170c967bb55/src/vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution.ts#L30-L83
-          this.vscodeManager.commands.executeCommand('openInTerminal', this.vscodeManager.urlHelper.file(path));
+          this.vscodeManager.commands.executeCommand(
+            'openInTerminal',
+            this.vscodeManager.urlHelper.file(path),
+          );
           break;
         case 'explorer':
           open(path);
           break;
         case 'window':
-          this.vscodeManager.commands.executeCommand('vscode.openFolder', this.vscodeManager.urlHelper.file(path));
+          this.vscodeManager.commands.executeCommand(
+            'vscode.openFolder',
+            this.vscodeManager.urlHelper.file(path),
+          );
           break;
         default:
           break;

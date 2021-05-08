@@ -4,21 +4,17 @@ import * as fileutils from '../utils/file';
 
 // ok
 import * as models from '../models';
-import { CommandBase } from './base';
-import { ExtensionCommandError } from './extensionCommandError';
 
 const _empty = '';
 
 /**
  * Register command.
  */
-export class Register extends CommandBase {
+export class Register implements models.ICommand {
   constructor(
     private vscodeManager: models.IVSCodeManager,
-    bookmarkManager: models.IBookmarkManager,
-  ) {
-    super(bookmarkManager);
-  }
+    private bookmarkManager: models.IBookmarkManager,
+  ) {}
 
   /**
    * Return the command name.
@@ -47,14 +43,12 @@ export class Register extends CommandBase {
     var bookmarksInfo: models.IBookmarksInfo;
     try {
       let fullPath = configManager.defaultBookmarkFullPath();
-      bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : _empty);
+      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(
+        fullPath ? fullPath : _empty,
+      );
     } catch (e) {
-      if (e instanceof ExtensionCommandError) {
-        this.vscodeManager.window.showWarningMessage(e.message);
-        return;
-      } else {
-        throw e;
-      }
+      this.vscodeManager.window.showWarningMessage(e.message);
+      return;
     }
 
     var path = fileutils.resolveHome(configManager.defaultBookmarkFullPath());
