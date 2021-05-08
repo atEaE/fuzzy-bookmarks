@@ -37,12 +37,12 @@ export class Setup extends CommandBase {
       if (input === 'y' || input === 'yes') {
         try {
           // check folder.
-          if (fs.existsSync(fileutils.resolveHome(configManager.defaultDir()))) {
+          if (fs.existsSync(fileutils.resolveHome(configManager.saveDirectoryPath()))) {
             this.vscodeManager.window.showInformationMessage('OK! Confirmed the existence of the destination folder.');
           } else {
-            fs.mkdirSync(fileutils.resolveHome(configManager.defaultDir()));
+            fs.mkdirSync(fileutils.resolveHome(configManager.saveDirectoryPath()));
             // eslint-disable-next-line max-len
-            this.vscodeManager.window.showInformationMessage(`OK! Create a new destination folder(${configManager.defaultDir()}).`);
+            this.vscodeManager.window.showInformationMessage(`OK! Create a new destination folder(${configManager.saveDirectoryPath()}).`);
           }
 
           // check file.

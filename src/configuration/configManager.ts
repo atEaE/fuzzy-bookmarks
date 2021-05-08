@@ -22,7 +22,7 @@ export class ConfigManager implements models.IConfigManager {
    * Returns the directory path to save the bookmark.
    * @returns saveBookmarkDir
    */
-  public defaultDir(): string | undefined {
+  public saveDirectoryPath(): string | undefined {
     return this.config.get<string>(models.ConfigurationKeys.saveBookmarkDir);
   }
 
@@ -47,7 +47,7 @@ export class ConfigManager implements models.IConfigManager {
    * @returns bookmarkFullPath
    */
   public defaultBookmarkFullPath(): string | undefined {
-    var dir = this.defaultDir();
+    var dir = this.saveDirectoryPath();
     var file = this.defaultFileName();
     if (dir && file) {
       return path.join(dir, file);
@@ -60,7 +60,7 @@ export class ConfigManager implements models.IConfigManager {
    */
   public validate(): [boolean, models.IInValidReason] {
     // Checking the setting values
-    if (!this.defaultDir() || !this.defaultDir()?.trim()) {
+    if (!this.saveDirectoryPath() || !this.saveDirectoryPath()?.trim()) {
       return [
         false,
         {
@@ -70,12 +70,12 @@ export class ConfigManager implements models.IConfigManager {
       ];
     }
 
-    if (!fs.existsSync(fileutils.resolveHome(this.defaultDir()))) {
+    if (!fs.existsSync(fileutils.resolveHome(this.saveDirectoryPath()))) {
       return [
         false,
         {
           // eslint-disable-next-line max-len
-          error: `The configured folder(${this.defaultDir()}) does not exist. Execute "FzB: Setup Fuzzy Bookmarks" or create a folder.`,
+          error: `The configured folder(${this.saveDirectoryPath()}) does not exist. Execute "FzB: Setup Fuzzy Bookmarks" or create a folder.`,
         },
       ];
     }
