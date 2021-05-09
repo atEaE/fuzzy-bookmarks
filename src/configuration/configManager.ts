@@ -30,7 +30,7 @@ export class ConfigManager implements models.IConfigManager {
    * Returns the default file name where the bookmarks are saved.
    * @returns defaultFileName
    */
-  public defaultFileName(): string | undefined {
+  public defaultFileName(): string {
     return this.filename;
   }
 

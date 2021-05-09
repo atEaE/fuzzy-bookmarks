@@ -1,4 +1,5 @@
 import * as open from 'open';
+import * as path from 'path';
 import * as fileutils from '../utils/file';
 
 // ok
@@ -11,7 +12,7 @@ export class Show implements models.ICommand {
   constructor(
     private vscodeManager: models.IVSCodeManager,
     private bookmarkManager: models.IBookmarkManager,
-  ) {}
+  ) { }
 
   /**
    * Return the command name.
@@ -44,6 +45,16 @@ export class Show implements models.ICommand {
       bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(
         fullPath ? fullPath : '',
       );
+
+      // workspace
+      let currentRootFolder = this.vscodeManager.workspace.workspaceFolders
+        ? this.vscodeManager.workspace.workspaceFolders[0].uri.path
+        : undefined;
+      if (currentRootFolder) {
+        let wkBookmarksPath = path.join(currentRootFolder, '.vscode', configManager.defaultFileName());
+        let wkBookmarksInfo = this.bookmarkManager.loadBookmarksInfo(wkBookmarksPath);
+        this.bookmarkManager.concatBookmarksInfo(bookmarksInfo, wkBookmarksInfo);
+      }
     } catch (e) {
       this.vscodeManager.window.showWarningMessage(e.message);
       return;
@@ -87,9 +98,9 @@ export class Show implements models.ICommand {
    */
   private showFile(description: string | undefined) {
     if (description) {
-      var path = fileutils.resolveHome(description);
+      var openPath = fileutils.resolveHome(description);
       this.vscodeManager.window.showTextDocument(
-        this.vscodeManager.urlHelper.file(path),
+        this.vscodeManager.urlHelper.file(openPath),
         {
           preview: false,
         },
@@ -107,23 +118,23 @@ export class Show implements models.ICommand {
     description: string | undefined,
   ) {
     if (description) {
-      var path = fileutils.resolveHome(description);
+      var openPath = fileutils.resolveHome(description);
       switch (configManager.directoryOpenType()) {
         case 'terminal':
           // eslint-disable-next-line max-len
           // refs: https://github.com/microsoft/vscode/blob/94c9ea46838a9a619aeafb7e8afd1170c967bb55/src/vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution.ts#L30-L83
           this.vscodeManager.commands.executeCommand(
             'openInTerminal',
-            this.vscodeManager.urlHelper.file(path),
+            this.vscodeManager.urlHelper.file(openPath),
           );
           break;
         case 'explorer':
-          open(path);
+          open(openPath);
           break;
         case 'window':
           this.vscodeManager.commands.executeCommand(
             'vscode.openFolder',
-            this.vscodeManager.urlHelper.file(path),
+            this.vscodeManager.urlHelper.file(openPath),
           );
           break;
         default:
