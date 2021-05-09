@@ -1,2 +1,2 @@
 export * from './commandNames';
-export * from './configurationKeys';
+export * from './configuration';

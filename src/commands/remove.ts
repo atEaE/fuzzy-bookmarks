@@ -3,16 +3,15 @@ import * as fileutils from '../utils/file';
 
 // ok
 import * as models from '../models';
-import { CommandBase } from './base';
-import { ExtensionCommandError } from './extensionCommandError';
 
 /**
  * Remove command.
  */
-export class Remove extends CommandBase {
-  constructor(private vscodeManager: models.IVSCodeManager, bookmarkManager: models.IBookmarkManager) {
-    super(bookmarkManager);
-  }
+export class Remove implements models.ICommand {
+  constructor(
+    private vscodeManager: models.IVSCodeManager,
+    private bookmarkManager: models.IBookmarkManager,
+  ) {}
 
   /**
    * Return the command name.
@@ -41,30 +40,32 @@ export class Remove extends CommandBase {
     var bookmarksInfo: models.IBookmarksInfo;
     try {
       let fullPath = configManager.defaultBookmarkFullPath();
-      bookmarksInfo = this.loadBookmarksInfo(fullPath ? fullPath : '');
+      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(
+        fullPath ? fullPath : '',
+      );
     } catch (e) {
-      if (e instanceof ExtensionCommandError) {
-        this.vscodeManager.window.showWarningMessage(e.message);
-        return;
-      } else {
-        throw e;
-      }
+      this.vscodeManager.window.showWarningMessage(e.message);
+      return;
     }
 
-    var concatBk = this.concatBookmark(
-      bookmarksInfo.fileBookmarks,
-      bookmarksInfo.folderBookmarks,
-      bookmarksInfo.urlBookmarks,
+    var concatBk = this.bookmarkManager.sortAndConcatBookmark(bookmarksInfo);
+    var items = concatBk.map<models.IBookmarkLabel>(b =>
+      this.bookmarkManager.createBookmarkLabel(b),
     );
-    var items = concatBk.map<models.IBookmarkLabel>(b => this.bookmarkManager.createBookmarkLabel(b));
     if (items.length === 0) {
-      this.vscodeManager.window.showWarningMessage('Bookmark has not been registered.');
+      this.vscodeManager.window.showWarningMessage(
+        'Bookmark has not been registered.',
+      );
       return;
     }
 
     var path = fileutils.resolveHome(configManager.defaultBookmarkFullPath());
     this.vscodeManager.window
-      .showQuickPick(items, { matchOnDescription: true, matchOnDetail: true, canPickMany: true })
+      .showQuickPick(items, {
+        matchOnDescription: true,
+        matchOnDetail: true,
+        canPickMany: true,
+      })
       .then(selected => {
         if (!selected || selected.length === 0) {
           return;
@@ -74,13 +75,19 @@ export class Remove extends CommandBase {
           if (bookmarksInfo) {
             switch (item.type) {
               case 'file':
-                bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(b => b.id !== item.id);
+                bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(
+                  b => b.id !== item.id,
+                );
                 break;
               case 'folder':
-                bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(b => b.id !== item.id);
+                bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(
+                  b => b.id !== item.id,
+                );
                 break;
               case 'url':
-                bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(b => b.id !== item.id);
+                bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(
+                  b => b.id !== item.id,
+                );
                 break;
               default:
                 break;
@@ -89,8 +96,12 @@ export class Remove extends CommandBase {
         });
 
         try {
-          fs.writeFileSync(path, JSON.stringify(bookmarksInfo), { encoding: 'utf-8' });
-          this.vscodeManager.window.showInformationMessage('Bookmark has been removed.');
+          fs.writeFileSync(path, JSON.stringify(bookmarksInfo), {
+            encoding: 'utf-8',
+          });
+          this.vscodeManager.window.showInformationMessage(
+            'Bookmark has been removed.',
+          );
         } catch (e) {
           this.vscodeManager.window.showErrorMessage(e.message);
           return;

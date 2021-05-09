@@ -1,0 +1,14 @@
+{
+    "command.category": "FzB",
+    "command.show.title": "Show Bookmarks",
+    "command.register.title": "Register Bookmarks",
+    "command.remove.title": "Remove Bookmarks",
+    "command.export.title": "Export Bookmarks",
+    "command.setup.title": "Setup Fuzzy Bookmarks",
+
+    "configuration.title": "Fuzzy Bookmarks",
+    "configuration.saveBookmarkDir.title": "Save Bookmark Directory",
+    "configuration.saveBookmarkDir.description": "Set the directory where you want to save the bookmarks. A '`bookmarks.json`' file will be created under the directory you set.",
+    "configuration.directoryOpenType.title": "Directory Open Type",
+    "configuration.directoryOpenType.description": "Set one of three types: '`terminal`', '`explorer`', or '`window`'.Set '`terminal`' to open the directory in a terminal. If '`explorer`' is set, the directory will be opened in the application explorer. If '`window`' is set, the directory will be opened in a new Window."
+}

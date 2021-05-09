@@ -1,0 +1,14 @@
+{
+    "command.category": "FzB",
+    "command.show.title": "Bookmarkを参照する",
+    "command.register.title": "Bookmarkを登録する",
+    "command.remove.title": "Bookmarkを削除する",
+    "command.export.title": "Bookmarkを書き出す",
+    "command.setup.title": "Fuzzy BookmarkのSetupを行う",
+
+    "configuration.title": "Fuzzy Bookmarks",
+    "configuration.saveBookmarkDir.title": "Save Bookmark Directory",
+    "configuration.saveBookmarkDir.description": "Bookmarkの保存先ディレクトリを設定してください。設定したディレクトリ配下に'`bookmarks.json`'が作成されます。",
+    "configuration.directoryOpenType.title": "Directory Open Type",
+    "configuration.directoryOpenType.description": "'`terminal`', '`explorer`', '`window`'の3種類から設定してください。'`terminal`'を設定するとターミナルでディレクトリを開きます。'`explorer`'を設定するとアプリケーションエクスプローラーでディレクトリを開きます。'`window`'を設定すると新規のWindowでディレクトリを開きます。"
+}
