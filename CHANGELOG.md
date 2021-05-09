@@ -1,14 +1,28 @@
 # Change Log
 
-## 0.4.0 - 9 May 2021
+## 0.4.0 - 10 May 2021
 
-## [Information]
+## Information
 
 The key name in Configuration has been changed.
 Please be careful if you are configuring individual settings.
 
 - bef: `fzb.defaultBookmarkDir` → aft: `fzb.saveBookmarkDir`
 - bef: `fzb.defaultBookmarkFileName` → delete.
+
+### [New or Update Feature]
+
+- [#47](https://github.com/atEaE/fuzzy-bookmarks/issues/47) Open a new window when a folder is selected with the Show command.
+- [#3](https://github.com/atEaE/fuzzy-bookmarks/issues/3) Japanese support for Command characters
+- [#49](https://github.com/atEaE/fuzzy-bookmarks/issues/49) I want to place a Workspace-only Bookmark.json in the .vscode
+
+### [Bugfix]
+
+- none
+
+### [Documentation]
+
+- [#7](https://github.com/atEaE/fuzzy-bookmarks/issues/7) Set the icon.
 
 ***
 
