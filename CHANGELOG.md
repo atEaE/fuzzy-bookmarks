@@ -1,5 +1,31 @@
 # Change Log
 
+## 0.5.0 - 13 May 2021
+
+## Information
+
+The command name in has been changed.
+Please be careful when using the target command.
+
+- Command Name bef: `Register Bookmarks` → aft: `Add Bookmark`
+- Command ID bef: `fzb.registerBookmarks` → aft: `fzb.addBookmarks`
+
+### [New or Update Feature]
+
+- [#53](https://github.com/atEaE/fuzzy-bookmarks/issues/53) Change the name of the command（Register Bookmark → Add Bookmark）
+- [#54](https://github.com/atEaE/fuzzy-bookmarks/issues/54) Add "global" and "workspace" options to the "Register Bookmarks" feature.
+- [#55](https://github.com/atEaE/fuzzy-bookmarks/issues/55) Add "global" and "workspace" options to the "Remove Bookmarks" feature.
+
+### [Bugfix]
+
+- none
+
+### [Documentation]
+
+- none
+
+***
+
 ## 0.4.1 - 10 May 2021
 
 ### [New or Update Feature]
