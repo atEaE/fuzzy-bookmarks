@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.4.1 - 10 May 2021
+
+### [New or Update Feature]
+
+- none
+
+### [Bugfix]
+
+- [#56](https://github.com/atEaE/fuzzy-bookmarks/issues/56) An error occurs when .vscode/bookmarks.json does not exist in workscpace.
+
+### [Documentation]
+
+- none
+
+***
+
 ## 0.4.0 - 10 May 2021
 
 ## Information
