@@ -8,9 +8,9 @@ import * as models from '../models';
 const _empty = '';
 
 /**
- * Register command.
+ * Add command.
  */
-export class Register implements models.ICommand {
+export class Add implements models.ICommand {
   constructor(
     private vscodeManager: models.IVSCodeManager,
     private bookmarkManager: models.IBookmarkManager,
@@ -21,7 +21,7 @@ export class Register implements models.ICommand {
    * @returns command name.
    */
   public name(): string {
-    return 'fzb.registerBookmarks';
+    return 'fzb.addBookmarks';
   }
 
   /**

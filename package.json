@@ -38,8 +38,8 @@
 			},
 			{
 				"category": "%command.category%",
-				"title": "%command.register.title%",
-				"command": "fzb.registerBookmarks"
+				"title": "%command.add.title%",
+				"command": "fzb.addBookmarks"
 			},
 			{
 				"category": "%command.category%",
@@ -84,7 +84,7 @@
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "fzb.registerBookmarks",
+					"command": "fzb.addBookmarks",
 					"when": "explorerViewletFocus",
 					"group": "FuzzyBookmarks@1"
 				}

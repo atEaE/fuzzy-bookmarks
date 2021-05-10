@@ -3,7 +3,7 @@ import { Export } from './export';
 import { Setup } from './setup';
 import { Show } from './show';
 import { Remove } from './remove';
-import { Register } from './register';
+import { Add } from './add';
 
 /**
  * Class for managing commands
@@ -28,7 +28,7 @@ export class CommandManager implements models.ICommandManager {
    * Initialize command manager.
    */
   private init(): void {
-    this.commands.push(new Register(this.vscodeManager, this.bookmarkManager));
+    this.commands.push(new Add(this.vscodeManager, this.bookmarkManager));
     this.commands.push(new Show(this.vscodeManager, this.bookmarkManager));
     this.commands.push(new Remove(this.vscodeManager, this.bookmarkManager));
     this.commands.push(new Export(this.vscodeManager, this.bookmarkManager));

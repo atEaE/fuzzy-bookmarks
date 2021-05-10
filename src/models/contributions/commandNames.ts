@@ -1,6 +1,6 @@
 export enum CommandNames {
   showBookmarks = 'fzb.showBookmarks',
-  registerBookmarks = 'fzb.registerBookmarks',
+  addBookmarks = 'fzb.addBookmarks',
   removeBookmarks = 'fzb.removeBookmarks',
   exportBookmarks = 'fzb.exportBookmarks',
   setupBookmarks = 'fzb.setupBookmarks',

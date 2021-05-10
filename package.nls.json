@@ -1,7 +1,7 @@
 {
     "command.category": "FzB",
     "command.show.title": "Show Bookmarks",
-    "command.register.title": "Register Bookmarks",
+    "command.add.title": "Add Bookmarks",
     "command.remove.title": "Remove Bookmarks",
     "command.export.title": "Export Bookmarks",
     "command.setup.title": "Setup Fuzzy Bookmarks",

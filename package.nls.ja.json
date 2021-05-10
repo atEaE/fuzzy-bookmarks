@@ -1,7 +1,7 @@
 {
     "command.category": "FzB",
     "command.show.title": "Bookmarkを参照する",
-    "command.register.title": "Bookmarkを登録する",
+    "command.add.title": "Bookmarkを追加する",
     "command.remove.title": "Bookmarkを削除する",
     "command.export.title": "Bookmarkを書き出す",
     "command.setup.title": "Fuzzy BookmarkのSetupを行う",
