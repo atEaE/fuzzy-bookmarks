@@ -1,5 +1,6 @@
 import * as open from 'open';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as fileutils from '../utils/file';
 
 // ok
@@ -49,9 +50,9 @@ export class Show implements models.ICommand {
       // workspace
       let currentRootFolder = this.vscodeManager.workspace.workspaceFolders
         ? this.vscodeManager.workspace.workspaceFolders[0].uri.path
-        : undefined;
-      if (currentRootFolder) {
-        let wkBookmarksPath = path.join(currentRootFolder, '.vscode', configManager.defaultFileName());
+        : '';
+      let wkBookmarksPath = path.join(currentRootFolder, '.vscode', configManager.defaultFileName());
+      if (fs.existsSync(wkBookmarksPath)) {
         let wkBookmarksInfo = this.bookmarkManager.loadBookmarksInfo(wkBookmarksPath);
         this.bookmarkManager.concatBookmarksInfo(bookmarksInfo, wkBookmarksInfo);
       }
