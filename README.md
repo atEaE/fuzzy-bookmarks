@@ -26,10 +26,10 @@ First, let's do the setup.
 Create a destination folder(`~/.vscode/fzb`) and destination file(`bookmarks.json`) based on the default set values.  
 Open the Command Pallet and search for `FzB: Setup Fuzzy Bookmarks`.
 
-### 2. Register Bookmark
+### 2. Add Bookmark
 
-After the setup is complete, let's register Bookmark.  
-Open the Command Pallet and search for `FzB: Register Bookmarks`.  
+After the setup is complete, let's Add Bookmark.  
+Open the Command Pallet and search for `FzB: Add Bookmarks`.  
 It is possible to register　URLs(`http://` or `https://` schema), Files and Direcotries.  
 The value you enter will be automatically recognized as a URL, file, or directory.
 If the file does not exist, or if you enter a value with an unidentified schema, the registration will not take place.
@@ -46,7 +46,7 @@ All you have to do is select one of the registered bookmarks.
 
 Perform setup to use the extension.
 
-### 2. FzB: Register Bookmarks
+### 2. FzB: Add Bookmarks
 
 Register your bookmark.
 
