@@ -70,7 +70,12 @@ export class Add implements models.ICommand {
     });
   }
 
-  private mainProcess(configManager: models.IConfigManager, saveType: models.SaveType, detail: string, alias: string) {
+  private mainProcess(
+    configManager: models.IConfigManager,
+    saveType: models.SaveType,
+    detail: string,
+    alias: string,
+  ): void {
     // load bookmarks infomation
     var bookmarksPath: string;
     if (saveType === models.SAVETYPE_GLOBAL) {

@@ -7,6 +7,8 @@ import * as fileutils from '../utils/file';
 // ok
 import * as models from '../models';
 
+const _empty = '';
+
 /**
  * Export command.
  */
@@ -37,7 +39,7 @@ export class Show implements models.ICommand {
     try {
       // global
       let fullPath = configManager.defaultBookmarkFullPath();
-      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(fullPath ? fullPath : '');
+      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(fullPath ? fullPath : _empty);
 
       // workspace
       let root = this.vscodeManager.currentRootFolder;
