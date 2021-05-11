@@ -14,7 +14,6 @@ export class ConfigManager implements models.IConfigManager {
     if (!vscodeManager) {
       throw new ReferenceError(`'vscode' not set to an instance`);
     }
-
     this.config = this.vscodeManager.workspace.getConfiguration(CONFIG_CATEGORY);
   }
 

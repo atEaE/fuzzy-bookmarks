@@ -1,3 +1,4 @@
+// TODO: want to replace it with a testable module.
 import * as fs from 'fs';
 import * as fileutils from '../utils/file';
 
@@ -8,10 +9,7 @@ import * as models from '../models';
  * Remove command.
  */
 export class Remove implements models.ICommand {
-  constructor(
-    private vscodeManager: models.IVSCodeManager,
-    private bookmarkManager: models.IBookmarkManager,
-  ) {}
+  constructor(private vscodeManager: models.IVSCodeManager, private bookmarkManager: models.IBookmarkManager) {}
 
   /**
    * Return the command name.
@@ -24,11 +22,7 @@ export class Remove implements models.ICommand {
   /**
    * Execute.
    */
-  public execute(
-    _execArgs: models.IVSCodeExecutableArguments,
-    configManager: models.IConfigManager,
-    _bookMarkManager: models.IBookmarkManager,
-  ): void {
+  public execute(_execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager): void {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
@@ -40,22 +34,16 @@ export class Remove implements models.ICommand {
     var bookmarksInfo: models.IBookmarksInfo;
     try {
       let fullPath = configManager.defaultBookmarkFullPath();
-      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(
-        fullPath ? fullPath : '',
-      );
+      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(fullPath ? fullPath : '');
     } catch (e) {
       this.vscodeManager.window.showWarningMessage(e.message);
       return;
     }
 
     var concatBk = this.bookmarkManager.sortAndConcatBookmark(bookmarksInfo);
-    var items = concatBk.map<models.IBookmarkLabel>(b =>
-      this.bookmarkManager.createBookmarkLabel(b),
-    );
+    var items = concatBk.map<models.IBookmarkLabel>(b => this.bookmarkManager.createBookmarkLabel(b));
     if (items.length === 0) {
-      this.vscodeManager.window.showWarningMessage(
-        'Bookmark has not been registered.',
-      );
+      this.vscodeManager.window.showWarningMessage('Bookmark has not been registered.');
       return;
     }
 
@@ -75,19 +63,13 @@ export class Remove implements models.ICommand {
           if (bookmarksInfo) {
             switch (item.type) {
               case 'file':
-                bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(
-                  b => b.id !== item.id,
-                );
+                bookmarksInfo.fileBookmarks = bookmarksInfo.fileBookmarks.filter(b => b.id !== item.id);
                 break;
               case 'folder':
-                bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(
-                  b => b.id !== item.id,
-                );
+                bookmarksInfo.folderBookmarks = bookmarksInfo.folderBookmarks.filter(b => b.id !== item.id);
                 break;
               case 'url':
-                bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(
-                  b => b.id !== item.id,
-                );
+                bookmarksInfo.urlBookmarks = bookmarksInfo.urlBookmarks.filter(b => b.id !== item.id);
                 break;
               default:
                 break;
@@ -99,9 +81,7 @@ export class Remove implements models.ICommand {
           fs.writeFileSync(path, JSON.stringify(bookmarksInfo), {
             encoding: 'utf-8',
           });
-          this.vscodeManager.window.showInformationMessage(
-            'Bookmark has been removed.',
-          );
+          this.vscodeManager.window.showInformationMessage('Bookmark has been removed.');
         } catch (e) {
           this.vscodeManager.window.showErrorMessage(e.message);
           return;

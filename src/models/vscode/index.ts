@@ -10,3 +10,4 @@ export * from './vscodeWindow';
 export * from './vscodeWorkspace';
 export * from './vscodeCommand';
 export * from './vscodeCommands';
+export * from './vscodeQuickPickItem';

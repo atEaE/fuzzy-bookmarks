@@ -31,16 +31,16 @@ export class ExtensionManager implements models.IExtensionManager {
    */
   private registerCommands(context: models.IVSCodeExtensionContext) {
     Object.entries(models.CommandNames).forEach(([_, value]) => {
-      let command = this.commandManager.get(value);
-      if (!command) {
+      let checkCmd = this.commandManager.get(value);
+      if (!checkCmd) {
         throw new ReferenceError(`${value} no set to an instance`)
       }
+      let command = checkCmd
       let disposable = this.vscodeManager.commands.registerCommand(command.name(), (uri: models.IVSCodeUri) => {
         let execArgs: models.IVSCodeExecutableArguments = {
           uri,
         };
         try {
-          // @ts-ignore
           command.execute(execArgs, this.configManager);
         } catch (e) {
           this.vscodeManager.window.showErrorMessage(e.message);

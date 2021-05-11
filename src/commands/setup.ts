@@ -1,3 +1,4 @@
+// TODO: want to replace it with a testable module.
 import * as fs from 'fs';
 import * as fileutils from '../utils/file';
 
@@ -8,10 +9,7 @@ import * as models from '../models';
  * Setup command.
  */
 export class Setup implements models.ICommand {
-  constructor(
-    private vscodeManager: models.IVSCodeManager,
-    private bookmarkManager: models.IBookmarkManager,
-  ) {}
+  constructor(private vscodeManager: models.IVSCodeManager, private bookmarkManager: models.IBookmarkManager) {}
 
   /**
    * Return the command name.
@@ -24,11 +22,7 @@ export class Setup implements models.ICommand {
   /**
    * Execute.
    */
-  public execute(
-    _execArgs: models.IVSCodeExecutableArguments,
-    configManager: models.IConfigManager,
-    _bookMarkManager: models.IBookmarkManager,
-  ): void {
+  public execute(_execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager): void {
     this.vscodeManager.window
       .showInputBox({
         // eslint-disable-next-line max-len
@@ -38,52 +32,24 @@ export class Setup implements models.ICommand {
         if (input === 'y' || input === 'yes') {
           try {
             // check folder.
-            if (
-              fs.existsSync(
-                fileutils.resolveHome(configManager.saveDirectoryPath()),
-              )
-            ) {
-              this.vscodeManager.window.showInformationMessage(
-                'OK! Confirmed the existence of the destination folder.',
-              );
-            } else {
-              fs.mkdirSync(
-                fileutils.resolveHome(configManager.saveDirectoryPath()),
-              );
-              // eslint-disable-next-line max-len
-              this.vscodeManager.window.showInformationMessage(
-                `OK! Create a new destination folder(${configManager.saveDirectoryPath()}).`,
-              );
-            }
-
-            // check file.
-            if (
-              fs.existsSync(
-                fileutils.resolveHome(configManager.defaultBookmarkFullPath()),
-              )
-            ) {
-              this.vscodeManager.window.showInformationMessage(
-                'OK! Confirmed the existence of the destination file.',
-              );
-            } else {
-              var blob = JSON.stringify(
-                this.bookmarkManager.cerateBookmarksInfo(),
-              );
-              fs.writeFileSync(
-                fileutils.resolveHome(configManager.defaultBookmarkFullPath()),
-                blob,
-              );
-              this.vscodeManager.window.showInformationMessage(
-                `OK! Create a new destination folder(${configManager.defaultBookmarkFullPath()}).`,
-              );
+            if (!fs.existsSync(fileutils.resolveHome(configManager.saveDirectoryPath()))) {
+              fs.mkdirSync(fileutils.resolveHome(configManager.saveDirectoryPath()));
             }
             this.vscodeManager.window.showInformationMessage(
-              'Setup completed! ',
+              'OK! Confirmed the existence of the destination folder.',
             );
+
+            // check file.
+            if (!fs.existsSync(fileutils.resolveHome(configManager.defaultBookmarkFullPath()))) {
+              var blob = JSON.stringify(this.bookmarkManager.cerateBookmarksInfo());
+              fs.writeFileSync(fileutils.resolveHome(configManager.defaultBookmarkFullPath()), blob);
+            }
+            this.vscodeManager.window.showInformationMessage(
+              'OK! Confirmed the existence of the destination file.',
+            );
+            this.vscodeManager.window.showInformationMessage('Setup completed🎉');
           } catch (e) {
-            this.vscodeManager.window.showErrorMessage(
-              'An error occurred during setup.' + e.message,
-            );
+            this.vscodeManager.window.showErrorMessage('An error occurred during setup.' + e.message);
           }
         } else {
           this.vscodeManager.window.showWarningMessage('Abort setup.');
