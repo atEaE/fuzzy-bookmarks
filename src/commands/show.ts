@@ -26,7 +26,7 @@ export class Show implements models.ICommand {
   /**
    * Execute.
    */
-  public execute(_execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager): void {
+  public async execute(_execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager) {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
@@ -61,24 +61,34 @@ export class Show implements models.ICommand {
       this.vscodeManager.window.showWarningMessage('Bookmark has not been registered.');
       return;
     }
-    this.vscodeManager.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true }).then(item => {
-      if (!item) {
-        return;
-      }
-      switch (item.type) {
-        case 'file':
-          this.showFile(item.description);
-          break;
-        case 'folder':
-          this.showFolder(configManager, item.description);
-          break;
-        case 'url':
-          this.showUrl(item.description);
-          break;
-        default:
-          break;
-      }
-    });
+
+    var item = await this.vscodeManager.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true });
+    if (!item) {
+      return
+    }
+
+    this.mainProcess(configManager = configManager, item = item);
+  }
+
+  /**
+   * show main process.
+   * @param configManager configuration manager
+   * @param item selected bookmarkslabel
+   */
+  private mainProcess(configManager: models.IConfigManager, item: models.IBookmarkLabel): void {
+    switch (item.type) {
+      case 'file':
+        this.showFile(item.description);
+        break;
+      case 'folder':
+        this.showFolder(configManager, item.description);
+        break;
+      case 'url':
+        this.showUrl(item.description);
+        break;
+      default:
+        break;
+    }
   }
 
   /**

@@ -96,12 +96,19 @@ export class Add implements models.ICommand {
     return alias;
   }
 
+  /**
+   * add main process
+   * @param configManager configuration manager
+   * @param saveType save type
+   * @param detail bookmark detail
+   * @param alias bookmark alias
+   */
   private mainProcess(
     configManager: models.IConfigManager,
     saveType: models.SaveType,
     detail: string,
     alias: string,
-  ): void {
+  ) {
     // load bookmarks infomation
     var bookmarksPath: string;
     if (saveType === models.SAVETYPE_GLOBAL) {
