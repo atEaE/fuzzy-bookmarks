@@ -26,7 +26,7 @@ export class Add implements models.ICommand {
   /**
    * Execute.
    */
-  public execute(execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager): void {
+  public async execute(execArgs: models.IVSCodeExecutableArguments, configManager: models.IConfigManager) {
     // validate cofiguration.
     var [ok, reason] = configManager.validate();
     if (!ok) {
@@ -34,40 +34,66 @@ export class Add implements models.ICommand {
       return;
     }
 
+    // select save type.
+    var selectSaveType = await this.selectSaveType();
+    if (!selectSaveType) {
+      return;
+    }
+    var saveType = selectSaveType;
+
     // if the command is called from explorer, get the URI.
-    var option: models.IVSCodeInputBoxOptions = {};
+    // If a file is selected from the exploiter and its saveType is `workspace`, convert it to a relative path.
+    // HACK: https://github.com/atEaE/fuzzy-bookmarks/issues/59
+    var detailOption: models.IVSCodeInputBoxOptions = {};
     if (execArgs.uri) {
-      option = { value: execArgs.uri.path, ignoreFocusOut: false };
+      var defaultPath = execArgs.uri.path;
+      if (saveType === models.SAVETYPE_WORKSPACE) {
+        var root = this.vscodeManager.currentRootFolder;
+        defaultPath = fileutils.resolveToRelative(root ? root : _empty, defaultPath);
+      }
+      detailOption = { value: defaultPath, ignoreFocusOut: false };
     }
 
-    var item: models.IVSCodeQuickPickItem[] = [{ label: models.SAVETYPE_GLOBAL }, { label: models.SAVETYPE_WORKSPACE }];
-    this.vscodeManager.window.showQuickPick(item).then(pickItem => {
-      if (undefined || (pickItem?.label !== models.SAVETYPE_GLOBAL && pickItem?.label !== models.SAVETYPE_WORKSPACE)) {
-        return;
-      }
-      var saveType = pickItem.label;
+    // get user input detail
+    var detail = await this.getUserInputDetail(detailOption);
+    if (detail === _empty) {
+      return;
+    }
 
-      this.vscodeManager.window.showInputBox(option).then(detail => {
-        if (!detail) {
-          return;
-        }
+    // get userr input alias
+    var alias = this.complementAlias(detail);
+    var aliasOption = { value: alias, prompt: 'Enter arias. You can also skip this step.' };
+    alias = await this.getUserInputAlias(aliasOption);
 
-        var tmpAlias = this.complementAlias(detail);
-        this.vscodeManager.window
-          .showInputBox({
-            value: tmpAlias,
-            prompt: 'Enter arias. You can also skip this step.',
-          })
-          .then(alias => {
-            this.mainProcess(
-              (configManager = configManager),
-              (saveType = saveType),
-              (detail = detail ? detail : _empty),
-              (alias = alias ? alias : _empty),
-            );
-          });
-      });
-    });
+    this.mainProcess(
+      (configManager = configManager),
+      (saveType = saveType),
+      (detail = detail ? detail : _empty),
+      (alias = alias ? alias : _empty),
+    );
+  }
+
+  private async selectSaveType(): Promise<models.SaveType | undefined> {
+    var selectItem = [{ label: models.SAVETYPE_GLOBAL }, { label: models.SAVETYPE_WORKSPACE }];
+
+    var selectedItem = await this.vscodeManager.window.showQuickPick(selectItem);
+    return selectedItem?.label;
+  }
+
+  private async getUserInputDetail(option: models.IVSCodeInputBoxOptions): Promise<string> {
+    var detail = await this.vscodeManager.window.showInputBox(option);
+    if (!detail) {
+      return _empty;
+    }
+    return detail;
+  }
+
+  private async getUserInputAlias(option: models.IVSCodeInputBoxOptions): Promise<string> {
+    var alias = await this.vscodeManager.window.showInputBox(option);
+    if (!alias) {
+      return _empty;
+    }
+    return alias;
   }
 
   private mainProcess(
@@ -85,14 +111,14 @@ export class Add implements models.ICommand {
       let root = this.vscodeManager.currentRootFolder;
       if (root) {
         try {
-          let wkVSCodePath = path.join(root.path, '.vscode');
+          let wkVSCodePath = path.join(root, '.vscode');
           bookmarksPath = path.join(wkVSCodePath, configManager.defaultFileName());
-          if (!fs.existsSync(fileutils.resolveHome(wkVSCodePath))) {
-            fs.mkdirSync(fileutils.resolveHome(wkVSCodePath));
+          if (!fs.existsSync(fileutils.resolveToAbsolute(root, wkVSCodePath))) {
+            fs.mkdirSync(fileutils.resolveToAbsolute(root, wkVSCodePath));
           }
-          if (!fs.existsSync(fileutils.resolveHome(bookmarksPath))) {
+          if (!fs.existsSync(fileutils.resolveToAbsolute(root, bookmarksPath))) {
             var blob = JSON.stringify(this.bookmarkManager.cerateBookmarksInfo());
-            fs.writeFileSync(fileutils.resolveHome(bookmarksPath), blob);
+            fs.writeFileSync(fileutils.resolveToAbsolute(root, bookmarksPath), blob);
           }
         } catch (e) {
           this.vscodeManager.window.showErrorMessage(e.message);
@@ -209,7 +235,8 @@ export class Add implements models.ICommand {
    */
   private identifyFileInput(detail: string, alias: string | undefined): models.IBookmark | undefined {
     try {
-      var addPath = fileutils.resolveHome(detail);
+      let root = this.vscodeManager.currentRootFolder;
+      var addPath = fileutils.resolveToAbsolute(root ? root : _empty, detail);
       if (fs.existsSync(addPath)) {
         var stat = fs.statSync(addPath);
         if (stat.isDirectory()) {

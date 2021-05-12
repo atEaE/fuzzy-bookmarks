@@ -45,9 +45,9 @@ export class VSCodeManager implements models.IVSCodeManager {
   /**
    * get current root folder
    */
-  public get currentRootFolder(): models.IVSCodeUri | undefined{
+  public get currentRootFolder(): string | undefined{
     return this.workspace.workspaceFolders
-        ? this.workspace.workspaceFolders[0].uri
+        ? this.workspace.workspaceFolders[0].uri.path
         : undefined;
   }
 }

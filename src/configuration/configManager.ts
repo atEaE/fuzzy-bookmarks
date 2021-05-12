@@ -6,6 +6,7 @@ import * as fileutils from '../utils/file';
 import * as models from '../models';
 
 const CONFIG_CATEGORY = 'fzb';
+const _empty = '';
 
 export class ConfigManager implements models.IConfigManager {
   private filename: string = 'bookmarks.json';
@@ -69,7 +70,10 @@ export class ConfigManager implements models.IConfigManager {
       ];
     }
 
-    if (!fs.existsSync(fileutils.resolveHome(this.saveDirectoryPath()))) {
+    var root = this.vscodeManager.currentRootFolder;
+    root = root ? root : _empty
+
+    if (!fs.existsSync(fileutils.resolveToAbsolute(root, this.saveDirectoryPath()))) {
       return [
         false,
         {
@@ -78,7 +82,7 @@ export class ConfigManager implements models.IConfigManager {
         },
       ];
     }
-    if (!fs.existsSync(fileutils.resolveHome(this.defaultBookmarkFullPath()))) {
+    if (!fs.existsSync(fileutils.resolveToAbsolute(root, this.defaultBookmarkFullPath()))) {
       return [
         false,
         {

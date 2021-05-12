@@ -53,7 +53,7 @@ export class Remove implements models.ICommand {
           // workspace
           let root = this.vscodeManager.currentRootFolder;
           if (root) {
-            let wkBookmarksPath = path.join(root.path, '.vscode', configManager.defaultFileName());
+            let wkBookmarksPath = path.join(root, '.vscode', configManager.defaultFileName());
             if (fs.existsSync(wkBookmarksPath)) {
               bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(wkBookmarksPath);
             } else {
@@ -77,7 +77,8 @@ export class Remove implements models.ICommand {
         return;
       }
 
-      var savePath = fileutils.resolveHome(configManager.defaultBookmarkFullPath());
+      var root = this.vscodeManager.currentRootFolder;
+      var savePath = fileutils.resolveToAbsolute(root ? root : _empty, configManager.defaultBookmarkFullPath());
       this.vscodeManager.window
         .showQuickPick(items, {
           matchOnDescription: true,

@@ -5,6 +5,8 @@ import * as fileutils from '../utils/file';
 // ok
 import * as models from '../models';
 
+const _empty = '';
+
 /**
  * Setup command.
  */
@@ -31,18 +33,24 @@ export class Setup implements models.ICommand {
       .then(input => {
         if (input === 'y' || input === 'yes') {
           try {
+
+            var root = this.vscodeManager.currentRootFolder;
+            root = root ? root : _empty;
+
             // check folder.
-            if (!fs.existsSync(fileutils.resolveHome(configManager.saveDirectoryPath()))) {
-              fs.mkdirSync(fileutils.resolveHome(configManager.saveDirectoryPath()));
+            var dirPath = fileutils.resolveToAbsolute(root, configManager.saveDirectoryPath());
+            if (!fs.existsSync(dirPath)) {
+              fs.mkdirSync(dirPath);
             }
             this.vscodeManager.window.showInformationMessage(
               'OK! Confirmed the existence of the destination folder.',
             );
 
             // check file.
-            if (!fs.existsSync(fileutils.resolveHome(configManager.defaultBookmarkFullPath()))) {
+            var bookmarksPath = fileutils.resolveToAbsolute(root, configManager.defaultBookmarkFullPath())
+            if (!fs.existsSync(bookmarksPath)) {
               var blob = JSON.stringify(this.bookmarkManager.cerateBookmarksInfo());
-              fs.writeFileSync(fileutils.resolveHome(configManager.defaultBookmarkFullPath()), blob);
+              fs.writeFileSync(bookmarksPath, blob);
             }
             this.vscodeManager.window.showInformationMessage(
               'OK! Confirmed the existence of the destination file.',

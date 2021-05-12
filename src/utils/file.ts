@@ -1,21 +1,52 @@
-import { join } from 'path';
+import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
+
+/**
+ * Converts an absolute path to a relative path.
+ * @param basedir base path
+ * @param filepath absolute filepath
+ * @returns relative path.
+ */
+export function resolveToRelative(basedir: string, filepath: string | undefined | null): string {
+  if (!filepath) {
+    return '';
+  }
+
+  return path.join('./', filepath.replace(basedir, ''));
+}
 
 /**
  * Returns the file path with the reference resolution to the HOME directory.
  * @param filepath filepath
  * @returns File path after name resolution
  */
-export function resolveHome(filepath: string | undefined | null): string {
+ export function resolveHome(filepath: string | undefined | null): string {
   if (!filepath) {
     return '';
   }
 
   if (filepath[0] === '~') {
-    return join(os.homedir(), filepath.slice(1));
+    filepath = path.join(os.homedir(), filepath.slice(1));
   }
   return filepath;
+}
+
+/**
+ * Returns the file path with the reference resolution to the HOME directory.
+ * @param basedir base path
+ * @param filepath filepath
+ * @returns File path after name resolution
+ */
+export function resolveToAbsolute(basedir: string, filepath: string | undefined | null): string {
+  if (!filepath) {
+    return '';
+  }
+
+  if (filepath[0] === '~') {
+    filepath = path.join(os.homedir(), filepath.slice(1));
+  }
+  return path.resolve(basedir, filepath);
 }
 
 /**

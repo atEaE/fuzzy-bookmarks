@@ -44,7 +44,7 @@ export class Show implements models.ICommand {
       // workspace
       let root = this.vscodeManager.currentRootFolder;
       if (root) {
-        let wkBookmarksPath = path.join(root.path, '.vscode', configManager.defaultFileName());
+        let wkBookmarksPath = path.join(root, '.vscode', configManager.defaultFileName());
         if (fs.existsSync(wkBookmarksPath)) {
           let wkBookmarksInfo = this.bookmarkManager.loadBookmarksInfo(wkBookmarksPath);
           this.bookmarkManager.concatBookmarksInfo(bookmarksInfo, wkBookmarksInfo);
@@ -87,7 +87,8 @@ export class Show implements models.ICommand {
    */
   private showFile(description: string | undefined) {
     if (description) {
-      var openPath = fileutils.resolveHome(description);
+      var root = this.vscodeManager.currentRootFolder;
+      var openPath = fileutils.resolveToAbsolute(root ? root : _empty, description);
       this.vscodeManager.window.showTextDocument(this.vscodeManager.urlHelper.file(openPath), {
         preview: false,
       });
@@ -101,7 +102,8 @@ export class Show implements models.ICommand {
    */
   private showFolder(configManager: models.IConfigManager, description: string | undefined) {
     if (description) {
-      var openPath = fileutils.resolveHome(description);
+      var root = this.vscodeManager.currentRootFolder;
+      var openPath = fileutils.resolveToAbsolute(root ? root : _empty, description);
       switch (configManager.directoryOpenType()) {
         case 'terminal':
           // eslint-disable-next-line max-len

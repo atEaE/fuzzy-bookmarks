@@ -44,7 +44,7 @@ export class Export implements models.ICommand {
       var root = this.vscodeManager.currentRootFolder;
 
       if (root) {
-        var exportPath = path.join(root.path, 'export-bookmarks.json');
+        var exportPath = path.join(root, 'export-bookmarks.json');
         fs.writeFileSync(exportPath, JSON.stringify(bookmarksInfo), {
           encoding: 'utf-8',
         });
