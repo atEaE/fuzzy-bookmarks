@@ -30,6 +30,14 @@ export class Export implements models.ICommand {
       return;
     }
 
+    this.mainProcess(configManager);
+  }
+
+  /**
+   * export main process
+   * @param configManager configuration manager
+   */
+  private mainProcess(configManager: models.IConfigManager): void {
     // load file
     var bookmarksInfo: models.IBookmarksInfo;
     try {
