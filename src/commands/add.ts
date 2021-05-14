@@ -34,30 +34,63 @@ export class Add implements models.ICommand {
       return;
     }
 
-    // select save type.
-    var selectSaveType = await this.selectSaveType();
-    if (!selectSaveType) {
-      return;
+    var wkFolders = this.vscodeManager.workspace.workspaceFolders;
+    var saveType = { type: models.SAVETYPE_GLOBAL, path: _empty };
+    if (wkFolders) {
+      // Select saveTyue if you have workspace open.
+      var selectSaveType = await this.selectSaveType();
+      if (!selectSaveType) {
+        return;
+      }
+      saveType.type = selectSaveType;
+
+      // Select folder, if workspace is muliti workspace style.
+      if (wkFolders.length > 1) {
+        if (execArgs.uri) {
+          var selectFilePath = execArgs.uri.path;
+          var targetFolder = this.vscodeManager.workspace.workspaceFolders?.find(f =>
+            selectFilePath.startsWith(f.uri.path),
+          );
+          if (!targetFolder) {
+            // eslint-disable-next-line max-len
+            this.vscodeManager.window.showErrorMessage(
+              `Internal Error: workspace containing the selected file cannot be found.(${execArgs.uri.path})`,
+            );
+            return;
+          }
+          saveType.path = targetFolder?.uri.path;
+        } else {
+          var roots = wkFolders.map(f => {
+            return { label: f.name, path: f.uri.path };
+          });
+          var root = await this.vscodeManager.window.showQuickPick(roots);
+          if (!root) {
+            return;
+          }
+          saveType.path = root.path;
+        }
+      } else {
+        saveType.path = this.vscodeManager.currentRootFolder ? this.vscodeManager.currentRootFolder : _empty;
+      }
     }
-    var saveType = selectSaveType;
 
     // if the command is called from explorer, get the URI.
     // If a file is selected from the exploiter and its saveType is `workspace`, convert it to a relative path.
     // HACK: https://github.com/atEaE/fuzzy-bookmarks/issues/59
-    var detailOption: models.IVSCodeInputBoxOptions = {};
+    var detail = _empty;
     if (execArgs.uri) {
-      var defaultPath = execArgs.uri.path;
-      if (saveType === models.SAVETYPE_WORKSPACE) {
-        var root = this.vscodeManager.currentRootFolder;
-        defaultPath = fileutils.resolveToRelative(root ? root : _empty, defaultPath);
+      var fileDefaultPath = execArgs.uri.path;
+      if (saveType.type === models.SAVETYPE_WORKSPACE) {
+        detail = fileutils.resolveToRelative(saveType.path, fileDefaultPath);
+      } else {
+        detail = execArgs.uri.path;
       }
-      detailOption = { value: defaultPath, ignoreFocusOut: false };
-    }
-
-    // get user input detail
-    var detail = await this.getUserInputDetail(detailOption);
-    if (detail === _empty) {
-      return;
+    } else {
+      // get user input detail
+      detail = await this.getUserInputDetail({});
+      if (!detail) {
+        return;
+      }
     }
 
     // get userr input alias
@@ -85,7 +118,7 @@ export class Add implements models.ICommand {
     if (!detail) {
       return _empty;
     }
-    return detail;
+    return detail.trim();
   }
 
   private async getUserInputAlias(option: models.IVSCodeInputBoxOptions): Promise<string> {
@@ -105,27 +138,27 @@ export class Add implements models.ICommand {
    */
   private mainProcess(
     configManager: models.IConfigManager,
-    saveType: models.SaveType,
+    saveType: { type: models.SaveType; path: string },
     detail: string,
     alias: string,
   ) {
     // load bookmarks infomation
-    var bookmarksPath: string;
-    if (saveType === models.SAVETYPE_GLOBAL) {
-      let tmp = configManager.defaultBookmarkFullPath();
-      bookmarksPath = tmp ? tmp : _empty;
+    var absoluteBookmarksSavePath: string;
+    if (saveType.type === models.SAVETYPE_GLOBAL) {
+      absoluteBookmarksSavePath = fileutils.resolveHome(configManager.defaultBookmarkFullPath());
     } else {
       let root = this.vscodeManager.currentRootFolder;
       if (root) {
         try {
-          let wkVSCodePath = path.join(root, '.vscode');
-          bookmarksPath = path.join(wkVSCodePath, configManager.defaultFileName());
-          if (!fs.existsSync(fileutils.resolveToAbsolute(root, wkVSCodePath))) {
-            fs.mkdirSync(fileutils.resolveToAbsolute(root, wkVSCodePath));
+          // initialize <workspace>/.vscode/bookmarks.json
+          var workspaceVSCodePath = path.join(saveType.path, '.vscode');
+          absoluteBookmarksSavePath = path.join(workspaceVSCodePath, configManager.defaultFileName());
+          if (!fs.existsSync(fileutils.resolveHome(workspaceVSCodePath))) {
+            fs.mkdirSync(fileutils.resolveHome(workspaceVSCodePath));
           }
-          if (!fs.existsSync(fileutils.resolveToAbsolute(root, bookmarksPath))) {
+          if (!fs.existsSync(fileutils.resolveHome(absoluteBookmarksSavePath))) {
             var blob = JSON.stringify(this.bookmarkManager.cerateBookmarksInfo());
-            fs.writeFileSync(fileutils.resolveToAbsolute(root, bookmarksPath), blob);
+            fs.writeFileSync(fileutils.resolveHome(absoluteBookmarksSavePath), blob);
           }
         } catch (e) {
           this.vscodeManager.window.showErrorMessage(e.message);
@@ -138,14 +171,14 @@ export class Add implements models.ICommand {
     }
     var bookmarksInfo: models.IBookmarksInfo;
     try {
-      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(bookmarksPath);
+      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(absoluteBookmarksSavePath);
     } catch (e) {
       this.vscodeManager.window.showWarningMessage(e.message);
       return;
     }
 
     // identify
-    var bk = this.identifyInput(detail, alias);
+    var bk = this.identifyInput(saveType.path, detail, alias);
     if (!bk) {
       this.vscodeManager.window.showWarningMessage('Sorry.. Unable to identify your input. ');
       return;
@@ -168,7 +201,7 @@ export class Add implements models.ICommand {
 
     // save
     try {
-      fs.writeFileSync(bookmarksPath, JSON.stringify(bookmarksInfo), {
+      fs.writeFileSync(absoluteBookmarksSavePath, JSON.stringify(bookmarksInfo), {
         encoding: 'utf-8',
       });
       this.vscodeManager.window.showInformationMessage('Bookmarking is complete🔖');
@@ -236,14 +269,14 @@ export class Add implements models.ICommand {
 
   /**
    * Determines if the input is a File-type or Folder-type Bookmark.
+   * @param basedir select workspace
    * @param detail user input detail
    * @param alias user input alias
    * @returns maybe bookmark
    */
-  private identifyFileInput(detail: string, alias: string | undefined): models.IBookmark | undefined {
+  private identifyFileInput(basedir: string, detail: string, alias: string | undefined): models.IBookmark | undefined {
     try {
-      let root = this.vscodeManager.currentRootFolder;
-      var addPath = fileutils.resolveToAbsolute(root ? root : _empty, detail);
+      var addPath = fileutils.resolveToAbsolute(basedir, detail);
       if (fs.existsSync(addPath)) {
         var stat = fs.statSync(addPath);
         if (stat.isDirectory()) {
@@ -261,17 +294,18 @@ export class Add implements models.ICommand {
 
   /**
    * It identifies the input and creates a Bookmark based on the content.
+   * @param basedir select workspace
    * @param detail user input detail
    * @param alias user input alias
    * @returns bookmark
    */
-  private identifyInput(detail: string, alias: string | undefined): models.IBookmark | undefined {
+  private identifyInput(basedir: string, detail: string, alias: string | undefined): models.IBookmark | undefined {
     var maybe = this.identifyURLInput(detail, alias);
     if (maybe) {
       return maybe;
     }
 
-    maybe = this.identifyFileInput(detail, alias);
+    maybe = this.identifyFileInput(basedir, detail, alias);
     if (maybe) {
       return maybe;
     }
