@@ -32,27 +32,34 @@ export class BookmarkManager implements models.IBookmarkManager {
    * @param alias bookmark alias
    * @returns bookmark
    */
-  public createBookmark(
-    type: models.BookmarkType,
-    detail: string,
-    alias: string | undefined,
-  ): models.IBookmark {
+  public createBookmark(type: models.BookmarkType, detail: string, alias: string | undefined): models.IBookmark {
     return { id: uuid.v4(), type, alias, detail };
   }
 
   /**
    * Create the items needed to display the Pick.
+   * @param prefix detail prefix(workspace name)
+   * @param workspace target workspace
    * @param bookmark bookmark
    * @return bookmarklabel
    */
   public createBookmarkLabel(
+    prefix: string | undefined,
+    workspace: string,
     bookmark: models.IBookmark,
   ): models.IBookmarkLabel {
+    var description = bookmark.detail;
+    if (prefix) {
+      description = prefix + '・' + description;
+    }
+
     return {
       id: bookmark.id,
       label: this.getLabel(bookmark.type, bookmark.alias),
       type: bookmark.type,
-      description: bookmark.detail,
+      originalDescription: bookmark.detail,
+      description,
+      workspace,
     };
   }
 
@@ -62,20 +69,13 @@ export class BookmarkManager implements models.IBookmarkManager {
    * @returns bookmarksinfo
    */
   public loadBookmarksInfo(fullPath: string): models.IBookmarksInfo {
-    var blob = fileutils.safeReadFileSync(
-      fileutils.resolveHome(fullPath),
-      'utf-8',
-    );
+    var blob = fileutils.safeReadFileSync(fileutils.resolveHome(fullPath), 'utf-8');
     if (!blob) {
-      throw new BookmarkError(
-        `Failed to load "${fullPath}". Please check the existence of the file.`,
-      );
+      throw new BookmarkError(`Failed to load "${fullPath}". Please check the existence of the file.`);
     }
     var bookmarksInfo = jsonutils.safeParse<models.IBookmarksInfo>(blob);
     if (!bookmarksInfo) {
-      throw new BookmarkError(
-        `Failed to load "${fullPath}". The format is different from what is expected.`,
-      );
+      throw new BookmarkError(`Failed to load "${fullPath}". The format is different from what is expected.`);
     }
     return bookmarksInfo;
   }
@@ -85,10 +85,7 @@ export class BookmarkManager implements models.IBookmarkManager {
    * @param base base BookmarksInfo
    * @param add add BookmarksInfo
    */
-  public concatBookmarksInfo(
-    base: models.IBookmarksInfo,
-    ...add: models.IBookmarksInfo[]
-  ): void {
+  public concatBookmarksInfo(base: models.IBookmarksInfo, ...add: models.IBookmarksInfo[]): void {
     add.forEach(bi => {
       base.fileBookmarks = base.fileBookmarks.concat(bi.fileBookmarks);
       base.folderBookmarks = base.folderBookmarks.concat(bi.folderBookmarks);
@@ -101,12 +98,8 @@ export class BookmarkManager implements models.IBookmarkManager {
    * @param bookmarksInfo BookmarksInfo
    * @returns afeter concat array
    */
-  public sortAndConcatBookmark(
-    bookmarksInfo: models.IBookmarksInfo,
-  ): models.IBookmark[] {
-    return bookmarksInfo.fileBookmarks
-      .concat(bookmarksInfo.folderBookmarks)
-      .concat(bookmarksInfo.urlBookmarks);
+  public sortAndConcatBookmark(bookmarksInfo: models.IBookmarksInfo): models.IBookmark[] {
+    return bookmarksInfo.fileBookmarks.concat(bookmarksInfo.folderBookmarks).concat(bookmarksInfo.urlBookmarks);
   }
 
   /**
@@ -114,10 +107,7 @@ export class BookmarkManager implements models.IBookmarkManager {
    * @param type bookmark types
    * @param alias bookmark alias
    */
-  private getLabel(
-    type: models.BookmarkType,
-    alias: string | undefined,
-  ): string {
+  private getLabel(type: models.BookmarkType, alias: string | undefined): string {
     var label: string = '';
     if (alias) {
       label = alias;

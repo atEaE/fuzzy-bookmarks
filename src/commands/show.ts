@@ -10,7 +10,7 @@ import * as models from '../models';
 const _empty = '';
 
 /**
- * Export command.
+ * Show command.
  */
 export class Show implements models.ICommand {
   constructor(private vscodeManager: models.IVSCodeManager, private bookmarkManager: models.IBookmarkManager) {}
@@ -35,39 +35,58 @@ export class Show implements models.ICommand {
     }
 
     // load file
-    var bookmarksInfo: models.IBookmarksInfo;
+    var bookmarksInfos: Array<{ domain: string; workspace: string; bookmarks: models.IBookmarksInfo }> = [];
     try {
       // global
       let fullPath = configManager.defaultBookmarkFullPath();
-      bookmarksInfo = this.bookmarkManager.loadBookmarksInfo(fullPath ? fullPath : _empty);
+      bookmarksInfos.push({
+        domain: _empty,
+        workspace: _empty,
+        bookmarks: this.bookmarkManager.loadBookmarksInfo(fullPath ? fullPath : _empty),
+      });
 
       // workspace
-      let root = this.vscodeManager.currentRootFolder;
-      if (root) {
-        let wkBookmarksPath = path.join(root, '.vscode', configManager.defaultFileName());
-        if (fs.existsSync(wkBookmarksPath)) {
-          let wkBookmarksInfo = this.bookmarkManager.loadBookmarksInfo(wkBookmarksPath);
-          this.bookmarkManager.concatBookmarksInfo(bookmarksInfo, wkBookmarksInfo);
-        }
+      let rootFolders = this.vscodeManager.workspace.workspaceFolders;
+      if (rootFolders) {
+        rootFolders.forEach(root => {
+          let wkBookmarksPath = path.join(root.uri.path, '.vscode', configManager.defaultFileName());
+          if (fs.existsSync(wkBookmarksPath)) {
+            let wkBookmarksInfo = this.bookmarkManager.loadBookmarksInfo(wkBookmarksPath);
+            bookmarksInfos.push({
+              domain: root.name,
+              workspace: root.uri.path,
+              bookmarks: wkBookmarksInfo,
+            });
+          }
+        });
       }
     } catch (e) {
       this.vscodeManager.window.showWarningMessage(e.message);
       return;
     }
 
-    var concatBk = this.bookmarkManager.sortAndConcatBookmark(bookmarksInfo);
-    var items = concatBk.map<models.IBookmarkLabel>(b => this.bookmarkManager.createBookmarkLabel(b));
-    if (items.length === 0) {
+    var concatLabel: models.IBookmarkLabel[] = [];
+    bookmarksInfos.forEach(info => {
+      var bkLabel = this.bookmarkManager
+        .sortAndConcatBookmark(info.bookmarks)
+        .map(b => this.bookmarkManager.createBookmarkLabel(info.domain, info.workspace, b));
+      concatLabel.push(...bkLabel);
+    });
+
+    if (concatLabel.length === 0) {
       this.vscodeManager.window.showWarningMessage('Bookmark has not been registered.');
       return;
     }
 
-    var item = await this.vscodeManager.window.showQuickPick(items, { matchOnDescription: true, matchOnDetail: true });
+    var item = await this.vscodeManager.window.showQuickPick(concatLabel, {
+      matchOnDescription: true,
+      matchOnDetail: true,
+    });
     if (!item) {
-      return
+      return;
     }
 
-    this.mainProcess(configManager = configManager, item = item);
+    this.mainProcess((configManager = configManager), (item = item));
   }
 
   /**
@@ -78,13 +97,13 @@ export class Show implements models.ICommand {
   private mainProcess(configManager: models.IConfigManager, item: models.IBookmarkLabel): void {
     switch (item.type) {
       case 'file':
-        this.showFile(item.description);
+        this.showFile(item.workspace, item.originalDescription);
         break;
       case 'folder':
-        this.showFolder(configManager, item.description);
+        this.showFolder(configManager, item.workspace, item.originalDescription);
         break;
       case 'url':
-        this.showUrl(item.description);
+        this.showUrl(item.originalDescription);
         break;
       default:
         break;
@@ -93,12 +112,17 @@ export class Show implements models.ICommand {
 
   /**
    * Refer to the files registered in Bookmark.
+   * @param workspace target workspace.
    * @param description bookmark description.
    */
-  private showFile(description: string | undefined) {
+  private showFile(workspace: string, description: string | undefined) {
     if (description) {
-      var root = this.vscodeManager.currentRootFolder;
-      var openPath = fileutils.resolveToAbsolute(root ? root : _empty, description);
+      var openPath = '';
+      if (workspace) {
+        openPath = fileutils.resolveToAbsolute(workspace, description);
+      } else {
+        openPath = fileutils.resolveHome(description);
+      }
       this.vscodeManager.window.showTextDocument(this.vscodeManager.urlHelper.file(openPath), {
         preview: false,
       });
@@ -108,12 +132,17 @@ export class Show implements models.ICommand {
   /**
    * Refer to the folder registered in Bookmark.
    * @param configManager Fuzzy Bookmark configuration manager.
+   * @param workspace target workspace.
    * @param description bookmark description.
    */
-  private showFolder(configManager: models.IConfigManager, description: string | undefined) {
+  private showFolder(configManager: models.IConfigManager, workspace: string, description: string | undefined) {
     if (description) {
-      var root = this.vscodeManager.currentRootFolder;
-      var openPath = fileutils.resolveToAbsolute(root ? root : _empty, description);
+      var openPath = '';
+      if (workspace) {
+        openPath = fileutils.resolveToAbsolute(workspace, description);
+      } else {
+        openPath = fileutils.resolveHome(description);
+      }
       switch (configManager.directoryOpenType()) {
         case 'terminal':
           // eslint-disable-next-line max-len

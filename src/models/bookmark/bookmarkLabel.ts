@@ -22,5 +22,15 @@ export interface IBookmarkLabel {
   /**
    * label detail
    */
-  description: string;
+  originalDescription: string;
+
+  /**
+   * description
+   */
+  description: string
+
+  /**
+   * Target workspace
+   */
+  workspace: string
 }

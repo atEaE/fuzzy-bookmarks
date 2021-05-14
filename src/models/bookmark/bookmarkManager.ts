@@ -9,7 +9,7 @@ export interface IBookmarkManager {
     detail: string,
     alias: string | undefined,
   ): IBookmark;
-  createBookmarkLabel(bookmark: IBookmark): IBookmarkLabel;
+  createBookmarkLabel(prefix: string, workspace: string, bookmark: IBookmark): IBookmarkLabel;
   loadBookmarksInfo(fullPath: string): IBookmarksInfo;
   concatBookmarksInfo(base: IBookmarksInfo, ...add: IBookmarksInfo[]): void;
   sortAndConcatBookmark(bookmarksInfo: IBookmarksInfo): IBookmark[];
